@@ -1,0 +1,13 @@
+[project]
+name = "manimo-shared"
+version = "0.1.0"
+description = "Shared utilities for Manimo services"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+

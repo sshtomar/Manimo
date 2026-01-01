@@ -1,0 +1,2 @@
+"""Manimo Modal package."""
+

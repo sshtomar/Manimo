@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+llm_logs/
+*.log.*
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Modal
+.modal/
+
+# R2 / Storage
+*.mp4
+*.avi
+*.mov
+rendered_videos/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Lock files (keep uv.lock, ignore others if needed)
+# uv.lock
+
