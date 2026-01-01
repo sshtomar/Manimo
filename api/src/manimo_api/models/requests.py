@@ -11,6 +11,14 @@ class AskAIRequest(BaseModel):
     user_id: str
     last_user_prompt: str
     apply: bool = False
+    agent_mode: bool = Field(
+        default=False,
+        description="Use Claude Agent SDK for autonomous generation"
+    )
+    use_subagents: bool = Field(
+        default=False,
+        description="Use dual-agent approach (planner + coder) when in agent mode"
+    )
 
 
 class AskAIResponse(BaseModel):
