@@ -1,21 +1,21 @@
 """Autonomous orchestrator using Claude Agent SDK.
 
 Unlike the standard orchestrator that makes LLM calls and returns text,
-this orchestrator uses the Agent SDK to autonomously:
+this orchestrator uses the Agent SDK running in a Modal sandbox to:
 1. Read and understand the notebook
 2. Generate appropriate Manim code
 3. Optionally verify by running manim
 4. Iterate on errors if needed
+
+The agent runs in an isolated Modal container for security.
 """
 
-import tempfile
-from pathlib import Path
-
+import modal
 import logfire
 
 from ..models.requests import AskAIResponse
-from ..storage.r2 import get_notebook_content, save_notebook_content
-from .agent_generator import collect_agent_result, AGENT_SDK_AVAILABLE
+from ..storage.r2 import save_notebook_content
+from ..config import settings
 
 
 async def orchestrate_with_agent(
@@ -25,11 +25,11 @@ async def orchestrate_with_agent(
     apply: bool = False,
     use_subagents: bool = False,
 ) -> AskAIResponse:
-    """Orchestrate code generation using Claude Agent SDK.
+    """Orchestrate code generation using Claude Agent SDK in Modal sandbox.
 
-    The agent autonomously reads files, generates code, and can
-    optionally verify the output. This is more powerful than the
-    standard approach but requires the Agent SDK.
+    The agent runs in an isolated Modal container where it can safely
+    use tools like Read, Glob, Grep, and Bash without affecting the
+    API server.
 
     Args:
         notebook_id: ID of the notebook to modify
@@ -41,11 +41,6 @@ async def orchestrate_with_agent(
     Returns:
         AskAIResponse with final artifact and metadata
     """
-    if not AGENT_SDK_AVAILABLE:
-        raise RuntimeError(
-            "Agent SDK not available. Install with: pip install claude-agent-sdk"
-        )
-
     with logfire.span(
         "orchestrator.agent_mode",
         notebook_id=notebook_id,
@@ -53,22 +48,24 @@ async def orchestrate_with_agent(
         user_prompt=user_prompt,
         use_subagents=use_subagents,
     ):
-        notebook_content = await get_notebook_content(notebook_id, user_id)
+        logfire.info(
+            "Starting agent generation in Modal sandbox",
+            mode="subagents" if use_subagents else "single",
+        )
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            notebook_path = Path(tmpdir) / "notebook.py"
-            notebook_path.write_text(notebook_content)
+        # Call the Modal sandbox function remotely
+        run_agent = modal.Function.from_name(
+            "manimo-notebooks", "run_agent_in_sandbox"
+        )
 
-            logfire.info(
-                "Starting agent generation",
-                mode="subagents" if use_subagents else "single",
-            )
-
-            result = await collect_agent_result(
-                notebook_path=str(notebook_path),
-                user_prompt=user_prompt,
-                use_subagents=use_subagents,
-            )
+        result = run_agent.remote(
+            notebook_id=notebook_id,
+            user_id=user_id,
+            user_prompt=user_prompt,
+            use_subagents=use_subagents,
+            model=settings.SONNET_MODEL,
+            opus_model=settings.OPUS_MODEL,
+        )
 
         applied_version_key = None
         if apply and result["artifact"]:
@@ -77,7 +74,7 @@ async def orchestrate_with_agent(
             )
 
         mode_desc = "dual-agent (planner+coder)" if use_subagents else "single agent"
-        rationale = f"Agent SDK generation ({mode_desc})"
+        rationale = f"Agent SDK generation ({mode_desc}) [Modal sandbox]"
 
         if result.get("session_id"):
             rationale += f" [session: {result['session_id'][:8]}...]"

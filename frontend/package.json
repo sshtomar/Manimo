@@ -13,9 +13,12 @@
     "axios": "^1.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.546.0",
+    "@clerk/nextjs": "^6.9.0",
     "next": "^14.2.0",
     "react": "^18.3.0",
+    "react-diff-viewer-continued": "^3.4.0",
     "react-dom": "^18.3.0",
+    "react-syntax-highlighter": "^16.1.0",
     "tailwind-merge": "^2.3.0",
     "video.js": "^8.10.0",
     "zustand": "^4.5.0"
@@ -24,6 +27,7 @@
     "@types/node": "^20.12.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
@@ -33,4 +37,3 @@
   },
   "packageManager": "pnpm@9.0.0"
 }
-

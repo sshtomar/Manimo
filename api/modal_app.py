@@ -9,6 +9,8 @@ import modal
 # Build the container image with all API dependencies and copy source code
 api_image = (
     modal.Image.debian_slim(python_version="3.11")
+    .apt_install("nodejs", "npm")
+    .run_commands("npm install -g @anthropic-ai/claude-code")
     .pip_install(
         # Core dependencies
         "fastapi>=0.110.0",
@@ -24,10 +26,12 @@ api_image = (
         # AI/LLM
         "anthropic>=0.21.0",
         "openai>=1.12.0",
+        "claude-agent-sdk>=0.1.0",
 
         # Utilities
         "python-dotenv>=1.0.0",
         "pyyaml>=6.0.0",
+        "logfire>=0.0.1",
     )
     # Copy source code into the image at build time
     .add_local_dir("src", "/app/src")
