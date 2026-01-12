@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
-import { Plus_Jakarta_Sans, JetBrains_Mono, Crimson_Pro } from 'next/font/google'
+import { Source_Sans_3, JetBrains_Mono, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 
-const jakarta = Plus_Jakarta_Sans({
+const sourceSans = Source_Sans_3({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
-  weight: ['400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -17,10 +17,10 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500'],
 })
 
-const crimsonPro = Crimson_Pro({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-serif',
+  variable: '--font-display',
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
 })
@@ -41,7 +41,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${jakarta.variable} ${jetbrainsMono.variable} ${crimsonPro.variable}`} suppressHydrationWarning>
+      <html lang="en" className={`${sourceSans.variable} ${jetbrainsMono.variable} ${cormorant.variable}`} suppressHydrationWarning>
         <body className="min-h-screen bg-surface text-primary antialiased">
           {children}
         </body>
