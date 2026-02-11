@@ -16,11 +16,10 @@ async def render_video(request: RenderVideoRequest) -> RenderVideoResponse:
     """
     Request video rendering from a notebook.
 
-    This will trigger Modal to render the Manim scene(s) and upload to R2.
+    Triggers E2B sandbox to render Manim scene(s) and upload to R2.
     """
     try:
-        # TODO: Implement Modal rendering trigger
-        # For now, return placeholder
+        # TODO: Implement E2B rendering trigger via manimo_e2b.render
         return RenderVideoResponse(
             job_id="placeholder-job-id",
             status="pending",

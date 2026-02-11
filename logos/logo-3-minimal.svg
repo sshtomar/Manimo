@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo 3: Brutalist Minimal - Sharp, technical, developer-focused -->
+
+  <!-- Bold M letterform -->
+  <path d="M45 145 L45 55 L100 105 L155 55 L155 145"
+        stroke="#0f0f0f"
+        stroke-width="14"
+        fill="none"
+        stroke-linecap="square"
+        stroke-linejoin="miter"/>
+
+  <!-- Accent bar suggesting motion/timeline -->
+  <rect x="45" y="155" width="110" height="4" fill="#0f0f0f"/>
+
+  <!-- Progress indicator -->
+  <rect x="45" y="155" width="45" height="4" fill="#ff4444"/>
+</svg>

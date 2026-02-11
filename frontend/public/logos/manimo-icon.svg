@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Manimo Icon - Standalone mark -->
+  <defs>
+    <linearGradient id="iconGradMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="12" width="44" height="44" rx="8" fill="#6366f1" opacity="0.15" transform="rotate(-6 22 34)"/>
+  <rect x="5" y="7" width="44" height="44" rx="8" fill="#6366f1" opacity="0.35" transform="rotate(-3 27 29)"/>
+  <rect x="10" y="2" width="44" height="44" rx="8" fill="url(#iconGradMain)"/>
+  <path d="M26 14 L26 34 L42 24 Z" fill="white" opacity="0.95"/>
+</svg>

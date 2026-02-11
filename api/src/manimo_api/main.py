@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
-from .routes import ask_ai, notebooks, videos
+from .routes import ask_ai, marimo, notebooks, videos
 from .monitoring import configure_logfire
 
 # Configure monitoring before app initialization
@@ -26,6 +26,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(ask_ai.router, prefix="/api", tags=["ai"])
+app.include_router(marimo.router, prefix="/api", tags=["marimo"])
 app.include_router(notebooks.router, prefix="/api", tags=["notebooks"])
 app.include_router(videos.router, prefix="/api", tags=["videos"])
 

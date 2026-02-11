@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manimo Logo Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 60px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0a0a0a;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #666;
+      font-weight: 300;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-container {
+      padding: 40px 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dark-bg {
+      background: #0a0a0a;
+      border: 1px solid #222;
+    }
+
+    .light-bg {
+      background: #f5f5f5;
+    }
+
+    .logo-container svg {
+      width: 300px;
+      height: auto;
+    }
+
+    .label {
+      color: #555;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Alternative: Icon only version */
+    .icon-only svg {
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Manimo Logo</h1>
+
+  <div class="preview-section">
+    <span class="label">Dark Background</span>
+    <div class="logo-container dark-bg">
+      <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="flowGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#e0e0e0">
+              <animate attributeName="stop-color" values="#e0e0e0; #888888; #e0e0e0" dur="3s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="50%" stop-color="#aaaaaa">
+              <animate attributeName="stop-color" values="#aaaaaa; #e0e0e0; #aaaaaa" dur="3s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="100%" stop-color="#888888">
+              <animate attributeName="stop-color" values="#888888; #cccccc; #888888" dur="3s" repeatCount="indefinite"/>
+            </stop>
+          </linearGradient>
+          <linearGradient id="symbolGradient1" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#cccccc">
+              <animate attributeName="stop-color" values="#cccccc; #ffffff; #cccccc" dur="4s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="100%" stop-color="#888888">
+              <animate attributeName="stop-color" values="#888888; #cccccc; #888888" dur="4s" repeatCount="indefinite"/>
+            </stop>
+          </linearGradient>
+        </defs>
+        <g transform="translate(10, 10)">
+          <path d="M 0 40 L 0 8 L 18 28" stroke="url(#symbolGradient1)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M 36 8 L 36 40 M 36 8 L 18 28" stroke="url(#symbolGradient1)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </g>
+        <text x="60" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="300" letter-spacing="0.5" fill="url(#flowGradient1)">animo</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <span class="label">Light Background</span>
+    <div class="logo-container light-bg">
+      <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="flowGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1a1a1a">
+              <animate attributeName="stop-color" values="#1a1a1a; #555555; #1a1a1a" dur="3s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="50%" stop-color="#3a3a3a">
+              <animate attributeName="stop-color" values="#3a3a3a; #1a1a1a; #3a3a3a" dur="3s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="100%" stop-color="#555555">
+              <animate attributeName="stop-color" values="#555555; #3a3a3a; #555555" dur="3s" repeatCount="indefinite"/>
+            </stop>
+          </linearGradient>
+          <linearGradient id="symbolGradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2a2a2a">
+              <animate attributeName="stop-color" values="#2a2a2a; #000000; #2a2a2a" dur="4s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="100%" stop-color="#5a5a5a">
+              <animate attributeName="stop-color" values="#5a5a5a; #2a2a2a; #5a5a5a" dur="4s" repeatCount="indefinite"/>
+            </stop>
+          </linearGradient>
+        </defs>
+        <g transform="translate(10, 10)">
+          <path d="M 0 40 L 0 8 L 18 28" stroke="url(#symbolGradient2)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M 36 8 L 36 40 M 36 8 L 18 28" stroke="url(#symbolGradient2)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </g>
+        <text x="60" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="300" letter-spacing="0.5" fill="url(#flowGradient2)">animo</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <span class="label">Icon Only</span>
+    <div class="logo-container dark-bg icon-only">
+      <svg viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="symbolGradient3" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#cccccc">
+              <animate attributeName="stop-color" values="#cccccc; #ffffff; #cccccc" dur="4s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="100%" stop-color="#888888">
+              <animate attributeName="stop-color" values="#888888; #cccccc; #888888" dur="4s" repeatCount="indefinite"/>
+            </stop>
+          </linearGradient>
+        </defs>
+        <g transform="translate(7, 10)">
+          <path d="M 0 40 L 0 8 L 18 28" stroke="url(#symbolGradient3)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M 36 8 L 36 40 M 36 8 L 18 28" stroke="url(#symbolGradient3)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

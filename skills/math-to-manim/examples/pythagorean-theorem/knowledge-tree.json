@@ -1,0 +1,81 @@
+{
+  "concept": "Pythagorean theorem",
+  "depth": 0,
+  "is_foundation": false,
+  "prerequisites": [
+    {
+      "concept": "right triangles",
+      "depth": 1,
+      "is_foundation": true,
+      "prerequisites": [],
+      "equations": ["a^2 + b^2 = c^2"],
+      "definitions": {
+        "a": "Length of one leg",
+        "b": "Length of other leg",
+        "c": "Length of hypotenuse"
+      },
+      "visual_spec": {
+        "elements": ["triangle", "right_angle_marker", "side_labels"],
+        "colors": {"triangle": "BLUE", "labels": "WHITE"},
+        "duration": 10
+      }
+    },
+    {
+      "concept": "area of a square",
+      "depth": 1,
+      "is_foundation": true,
+      "prerequisites": [],
+      "equations": ["A = s^2"],
+      "definitions": {
+        "A": "Area",
+        "s": "Side length"
+      },
+      "visual_spec": {
+        "elements": ["square", "area_shading", "formula"],
+        "colors": {"square": "YELLOW", "shading": "YELLOW"},
+        "duration": 10
+      }
+    },
+    {
+      "concept": "geometric proof techniques",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "area conservation",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": ["A_{before} = A_{after}"],
+          "definitions": {
+            "A": "Total area is preserved under rearrangement"
+          },
+          "visual_spec": {
+            "elements": ["shape_before", "shape_after", "equality_sign"],
+            "colors": {"before": "BLUE", "after": "GREEN"},
+            "duration": 10
+          }
+        }
+      ]
+    }
+  ],
+  "equations": [
+    "a^2 + b^2 = c^2",
+    "c = \\sqrt{a^2 + b^2}"
+  ],
+  "definitions": {
+    "a": "Length of first leg of right triangle",
+    "b": "Length of second leg of right triangle",
+    "c": "Length of hypotenuse"
+  },
+  "visual_spec": {
+    "elements": ["right_triangle", "squares_on_sides", "area_comparison"],
+    "colors": {
+      "triangle": "WHITE",
+      "square_a": "BLUE",
+      "square_b": "YELLOW",
+      "square_c": "GREEN"
+    },
+    "duration": 30
+  }
+}

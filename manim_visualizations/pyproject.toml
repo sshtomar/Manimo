@@ -1,0 +1,15 @@
+[project]
+name = "manim-visualizations"
+version = "0.1.0"
+description = "Mathematical visualizations using Manim - Linear Algebra, Calculus, and Pythagorean Theorem proofs"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "manim>=0.19.1",
+    "marimo>=0.18.4",
+    "numpy>=2.4.0",
+    "playwright>=1.57.0",
+]
+
+[project.scripts]
+render-manim = "render:main"

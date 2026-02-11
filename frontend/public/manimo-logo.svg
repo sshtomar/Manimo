@@ -1,0 +1,127 @@
+<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Flowing monochrome gradient -->
+    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1a1a1a">
+        <animate
+          attributeName="stop-color"
+          values="#1a1a1a; #666666; #1a1a1a"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+      </stop>
+      <stop offset="50%" stop-color="#4a4a4a">
+        <animate
+          attributeName="stop-color"
+          values="#4a4a4a; #1a1a1a; #4a4a4a"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+      </stop>
+      <stop offset="100%" stop-color="#666666">
+        <animate
+          attributeName="stop-color"
+          values="#666666; #4a4a4a; #666666"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+      </stop>
+    </linearGradient>
+
+    <!-- Accent shimmer gradient -->
+    <linearGradient id="shimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#888888" stop-opacity="0">
+        <animate
+          attributeName="offset"
+          values="-0.5; 1.5"
+          dur="2s"
+          repeatCount="indefinite"
+        />
+      </stop>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.3">
+        <animate
+          attributeName="offset"
+          values="0; 2"
+          dur="2s"
+          repeatCount="indefinite"
+        />
+      </stop>
+      <stop offset="100%" stop-color="#888888" stop-opacity="0">
+        <animate
+          attributeName="offset"
+          values="0.5; 2.5"
+          dur="2s"
+          repeatCount="indefinite"
+        />
+      </stop>
+    </linearGradient>
+
+    <!-- Geometric M symbol gradient -->
+    <linearGradient id="symbolGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2a2a2a">
+        <animate
+          attributeName="stop-color"
+          values="#2a2a2a; #5a5a5a; #2a2a2a"
+          dur="4s"
+          repeatCount="indefinite"
+        />
+      </stop>
+      <stop offset="100%" stop-color="#6a6a6a">
+        <animate
+          attributeName="stop-color"
+          values="#6a6a6a; #3a3a3a; #6a6a6a"
+          dur="4s"
+          repeatCount="indefinite"
+        />
+      </stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Geometric M Symbol -->
+  <g transform="translate(10, 10)">
+    <!-- Left stroke of M -->
+    <path
+      d="M 0 40 L 0 8 L 18 28"
+      stroke="url(#symbolGradient)"
+      stroke-width="6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+    <!-- Right stroke of M -->
+    <path
+      d="M 36 8 L 36 40 M 36 8 L 18 28"
+      stroke="url(#symbolGradient)"
+      stroke-width="6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+  </g>
+
+  <!-- Wordmark: animo -->
+  <text
+    x="60"
+    y="42"
+    font-family="system-ui, -apple-system, sans-serif"
+    font-size="32"
+    font-weight="300"
+    letter-spacing="0.5"
+    fill="url(#flowGradient)"
+  >
+    animo
+  </text>
+
+  <!-- Subtle shimmer overlay on text -->
+  <text
+    x="60"
+    y="42"
+    font-family="system-ui, -apple-system, sans-serif"
+    font-size="32"
+    font-weight="300"
+    letter-spacing="0.5"
+    fill="url(#shimmer)"
+  >
+    animo
+  </text>
+</svg>
