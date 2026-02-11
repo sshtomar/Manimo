@@ -1,20 +1,16 @@
-# E2B Template Configuration for Manimo Notebooks
+# This is a config for E2B sandbox template.
+# You can use template ID (2r0ttyrrcln7v7udxtl7) or template name (manimo-notebook) to create a sandbox:
 
-[template]
-name = "manimo-notebook"
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox.create("manimo-notebook") # Sync sandbox
+# sandbox = await AsyncSandbox.create("manimo-notebook") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('manimo-notebook')
+
+team_id = "d6930be7-5810-4f1b-9183-00bb8de6ba01"
 dockerfile = "e2b.Dockerfile"
-
-# Memory and CPU allocation
-memory_mb = 4096
-cpu_count = 2
-
-# Start command - keep container alive
-start_cmd = "sleep infinity"
-
-# Exposed ports
-# 8080: Marimo notebook server
-# 8081: AI server (internal, for Marimo AI integration)
-
-[template.metadata]
-description = "Manimo notebook environment with Marimo, Manim, and AI integration"
-version = "1.0.0"
+template_name = "manimo-notebook"
+template_id = "2r0ttyrrcln7v7udxtl7"
