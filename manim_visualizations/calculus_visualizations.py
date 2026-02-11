@@ -12,7 +12,6 @@ Improved with 3Blue1Brown visualization principles:
 """
 
 from manim import (
-    Scene,
     VGroup,
     Axes,
     Text,
@@ -40,20 +39,6 @@ from manim import (
     Succession,
     ValueTracker,
     always_redraw,
-    BLUE,
-    BLUE_D,
-    BLUE_E,
-    RED,
-    RED_D,
-    GREEN,
-    GREEN_D,
-    YELLOW,
-    ORANGE,
-    PURPLE,
-    TEAL,
-    WHITE,
-    GREY,
-    GREY_B,
     UP,
     DOWN,
     LEFT,
@@ -71,20 +56,10 @@ from manim import (
     config,
 )
 
-# =============================================================================
-# CONSISTENT COLOR PALETTE (3b1b Principle: Same entity = same color everywhere)
-# =============================================================================
-FUNC_COLOR = BLUE          # Functions f(x)
-DERIV_COLOR = RED          # Derivatives f'(x)
-INTEGRAL_COLOR = GREEN     # Integrals, antiderivatives
-X_COLOR = YELLOW           # x variable, points on x-axis
-AREA_COLOR = GREEN_D       # Shaded areas
-TANGENT_COLOR = RED        # Tangent lines
-SECANT_COLOR = ORANGE      # Secant lines
-HIGHLIGHT_COLOR = YELLOW   # Key results, emphasis
+from themed_scene import ThemedScene
 
 
-class FunctionPlotAnimation(Scene):
+class FunctionPlotAnimation(ThemedScene):
     """
     Animate how a function is plotted over time.
 
@@ -96,6 +71,8 @@ class FunctionPlotAnimation(Scene):
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create coordinate system (geometry first)
         # =====================================================================
@@ -108,7 +85,7 @@ class FunctionPlotAnimation(Scene):
         )
         axes.shift(DOWN * 0.5)
         labels = axes.get_axis_labels(
-            x_label=MathTex("x", color=X_COLOR),
+            x_label=MathTex("x", color=t.accent),
             y_label=MathTex("y")
         )
 
@@ -122,10 +99,10 @@ class FunctionPlotAnimation(Scene):
         # =====================================================================
 
         # Plot the function with tracing dot (show process, not just result)
-        graph = axes.plot(lambda x: x**2, x_range=[-3, 3], color=FUNC_COLOR)
+        graph = axes.plot(lambda x: x**2, x_range=[-3, 3], color=t.primary)
 
         # Tracing dot that follows the curve creation
-        trace_dot = Dot(color=X_COLOR, radius=0.12)
+        trace_dot = Dot(color=t.accent, radius=0.12)
         trace_dot.move_to(axes.c2p(-3, 9))
 
         # Add the dot first, then create curve with dot following
@@ -143,8 +120,8 @@ class FunctionPlotAnimation(Scene):
         # =====================================================================
         func_label = MathTex(
             r"f(x) = x^2",
-            tex_to_color_map={"x": X_COLOR, "f": FUNC_COLOR},
-            font_size=32
+            tex_to_color_map={"x": t.accent, "f": t.primary},
+            font_size=t.body_size
         )
         func_label.to_corner(UR)
 
@@ -163,13 +140,13 @@ class FunctionPlotAnimation(Scene):
         # Use TransformMatchingTex for equation evolution
         new_label = MathTex(
             r"g(x) = \sin(x) + 3",
-            tex_to_color_map={"x": X_COLOR, "g": GREEN},
-            font_size=32
+            tex_to_color_map={"x": t.accent, "g": t.tertiary},
+            font_size=t.body_size
         )
         new_label.to_corner(UR)
 
         new_graph = axes.plot(
-            lambda x: np.sin(x) + 3, x_range=[-3, 3], color=GREEN
+            lambda x: np.sin(x) + 3, x_range=[-3, 3], color=t.tertiary
         )
 
         # Transformation shows the relationship
@@ -182,7 +159,7 @@ class FunctionPlotAnimation(Scene):
         self.wait(2)  # Final pause for comprehension
 
 
-class TangentLineDerivative(Scene):
+class TangentLineDerivative(ThemedScene):
     """
     Animate tangent lines moving along a curve to explain derivatives.
 
@@ -194,6 +171,8 @@ class TangentLineDerivative(Scene):
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Establish the curve (geometry first)
         # =====================================================================
@@ -206,7 +185,7 @@ class TangentLineDerivative(Scene):
         )
         axes.shift(DOWN * 0.5 + LEFT * 1)
         labels = axes.get_axis_labels(
-            x_label=MathTex("x", color=X_COLOR),
+            x_label=MathTex("x", color=t.accent),
             y_label=MathTex("y")
         )
 
@@ -217,7 +196,7 @@ class TangentLineDerivative(Scene):
         func = lambda x: x**2
         derivative = lambda x: 2 * x
 
-        graph = axes.plot(func, x_range=[-0.5, 3.2], color=FUNC_COLOR, stroke_width=3)
+        graph = axes.plot(func, x_range=[-0.5, 3.2], color=t.primary, stroke_width=t.curve_stroke_width)
 
         # Show the curve first, no label yet (geometry before symbols)
         self.play(Create(graph), run_time=2)
@@ -231,7 +210,7 @@ class TangentLineDerivative(Scene):
         # Point on curve (prominent, important)
         point = always_redraw(lambda: Dot(
             axes.c2p(x_tracker.get_value(), func(x_tracker.get_value())),
-            color=X_COLOR,
+            color=t.accent,
             radius=0.12
         ))
 
@@ -244,7 +223,7 @@ class TangentLineDerivative(Scene):
             x_range = 1.5  # How far the line extends
             start = axes.c2p(x - x_range, y - slope * x_range)
             end = axes.c2p(x + x_range, y + slope * x_range)
-            return Line(start, end, color=TANGENT_COLOR, stroke_width=3)
+            return Line(start, end, color=t.secondary, stroke_width=t.curve_stroke_width)
 
         tangent = always_redraw(get_tangent_line)
 
@@ -259,7 +238,7 @@ class TangentLineDerivative(Scene):
         # =====================================================================
 
         # Function label (lower opacity - context, not focus)
-        func_label = MathTex(r"f(x) = x^2", font_size=28, color=FUNC_COLOR)
+        func_label = MathTex(r"f(x) = x^2", font_size=t.body_size, color=t.primary)
         func_label.next_to(graph, UR, buff=0.2)
         func_label.set_opacity(0.7)  # Context element
 
@@ -269,13 +248,13 @@ class TangentLineDerivative(Scene):
         slope_display = always_redraw(lambda: VGroup(
             MathTex(
                 rf"x = {x_tracker.get_value():.1f}",
-                font_size=28,
-                color=X_COLOR,
+                font_size=t.body_size,
+                color=t.accent,
             ),
             MathTex(
                 rf"\text{{slope}} = f'(x) = {derivative(x_tracker.get_value()):.1f}",
-                font_size=28,
-                color=TANGENT_COLOR,
+                font_size=t.body_size,
+                color=t.secondary,
             ),
         ).arrange(DOWN, aligned_edge=LEFT).to_corner(UR))
 
@@ -305,14 +284,14 @@ class TangentLineDerivative(Scene):
         # =====================================================================
         # PHASE 5: RESOLUTION - State the key insight
         # =====================================================================
-        title = Text("Derivative = Slope of Tangent Line", font_size=28, color=HIGHLIGHT_COLOR)
+        title = Text("Derivative = Slope of Tangent Line", font_size=t.body_size, color=t.accent)
         title.to_edge(UP)
 
         self.play(Write(title))
         self.wait(2)
 
 
-class SecantToTangent(Scene):
+class SecantToTangent(ThemedScene):
     """
     Show how secant lines approach tangent as dx -> 0.
     Core idea of the derivative definition.
@@ -325,6 +304,8 @@ class SecantToTangent(Scene):
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Establish the curve and fixed point
         # =====================================================================
@@ -340,14 +321,14 @@ class SecantToTangent(Scene):
         self.play(Create(axes), run_time=1)
 
         func = lambda x: x**2
-        graph = axes.plot(func, x_range=[0.5, 3.2], color=FUNC_COLOR, stroke_width=3)
+        graph = axes.plot(func, x_range=[0.5, 3.2], color=t.primary, stroke_width=t.curve_stroke_width)
         self.play(Create(graph), run_time=1.5)
         self.wait(0.5)
 
         # Fixed point a
         x0 = 1.5
-        point_a = Dot(axes.c2p(x0, func(x0)), color=X_COLOR, radius=0.1)
-        label_a = MathTex("a", font_size=24, color=X_COLOR).next_to(point_a, DL, buff=0.1)
+        point_a = Dot(axes.c2p(x0, func(x0)), color=t.accent, radius=0.1)
+        label_a = MathTex("a", font_size=t.label_size, color=t.accent).next_to(point_a, DL, buff=0.1)
 
         self.play(FadeIn(point_a, scale=0.5), Write(label_a))
         self.wait(1)
@@ -357,8 +338,8 @@ class SecantToTangent(Scene):
         # =====================================================================
         formula = MathTex(
             r"\text{Slope} = \frac{f(a+h) - f(a)}{h}",
-            font_size=28,
-            tex_to_color_map={"a": X_COLOR, "h": ORANGE}
+            font_size=t.body_size,
+            tex_to_color_map={"a": t.accent, "h": t.accent2}
         )
         formula.to_corner(UR)
         self.play(Write(formula))
@@ -375,16 +356,16 @@ class SecantToTangent(Scene):
         y0, y1 = func(x0), func(x1)
         slope = (y1 - y0) / dx
 
-        point_b = Dot(axes.c2p(x1, y1), color=SECANT_COLOR, radius=0.08)
+        point_b = Dot(axes.c2p(x1, y1), color=t.accent2, radius=0.08)
 
         # Extended line
         start = axes.c2p(x0 - 0.5, y0 - 0.5 * slope)
         end = axes.c2p(x1 + 0.5, y1 + 0.5 * slope)
-        secant_line = Line(start, end, color=SECANT_COLOR, stroke_width=3)
+        secant_line = Line(start, end, color=t.accent2, stroke_width=t.curve_stroke_width)
 
         h_display = VGroup(
-            MathTex(f"h = {dx}", font_size=24, color=ORANGE),
-            MathTex(f"\\text{{slope}} = {slope:.2f}", font_size=24, color=SECANT_COLOR),
+            MathTex(f"h = {dx}", font_size=t.label_size, color=t.accent2),
+            MathTex(f"\\text{{slope}} = {slope:.2f}", font_size=t.label_size, color=t.accent2),
         ).arrange(DOWN, aligned_edge=LEFT).next_to(formula, DOWN, buff=0.5)
 
         self.play(
@@ -400,15 +381,15 @@ class SecantToTangent(Scene):
             y1 = func(x1)
             slope = (y1 - y0) / dx
 
-            new_point_b = Dot(axes.c2p(x1, y1), color=SECANT_COLOR, radius=0.08)
+            new_point_b = Dot(axes.c2p(x1, y1), color=t.accent2, radius=0.08)
 
             start = axes.c2p(x0 - 0.5, y0 - 0.5 * slope)
             end = axes.c2p(x1 + 0.5, y1 + 0.5 * slope)
-            new_line = Line(start, end, color=SECANT_COLOR, stroke_width=3)
+            new_line = Line(start, end, color=t.accent2, stroke_width=t.curve_stroke_width)
 
             new_h_display = VGroup(
-                MathTex(f"h = {dx}", font_size=24, color=ORANGE),
-                MathTex(f"\\text{{slope}} = {slope:.2f}", font_size=24, color=SECANT_COLOR),
+                MathTex(f"h = {dx}", font_size=t.label_size, color=t.accent2),
+                MathTex(f"\\text{{slope}} = {slope:.2f}", font_size=t.label_size, color=t.accent2),
             ).arrange(DOWN, aligned_edge=LEFT).next_to(formula, DOWN, buff=0.5)
 
             # Transform (not replace!) - shows the progression
@@ -426,7 +407,7 @@ class SecantToTangent(Scene):
         self.wait(0.5)  # Pause before revelation
 
         # Change secant to tangent color (it has become the tangent!)
-        final_tangent = secant_line.copy().set_color(TANGENT_COLOR)
+        final_tangent = secant_line.copy().set_color(t.secondary)
         self.play(
             Transform(secant_line, final_tangent),
             point_b.animate.set_opacity(0),  # Second point disappears
@@ -436,20 +417,20 @@ class SecantToTangent(Scene):
         # The limit formula - the big reveal
         limit_text = MathTex(
             r"\lim_{h \to 0} \frac{f(a+h) - f(a)}{h} = f'(a)",
-            font_size=32,
-            tex_to_color_map={"a": X_COLOR, "h": ORANGE, "f'": TANGENT_COLOR}
+            font_size=t.body_size,
+            tex_to_color_map={"a": t.accent, "h": t.accent2, "f'": t.secondary}
         )
         limit_text.to_edge(DOWN)
 
         # Highlight box around the result
-        box = SurroundingRectangle(limit_text, color=HIGHLIGHT_COLOR, buff=0.15)
+        box = SurroundingRectangle(limit_text, color=t.accent, buff=0.15)
 
         self.play(Write(limit_text), run_time=1.5)
         self.play(Create(box))
         self.wait(2)  # Long final pause
 
 
-class RiemannSumsToIntegral(Scene):
+class RiemannSumsToIntegral(ThemedScene):
     """
     Animate Riemann sums becoming the definite integral.
 
@@ -461,6 +442,8 @@ class RiemannSumsToIntegral(Scene):
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - The curve and bounds
         # =====================================================================
@@ -474,7 +457,7 @@ class RiemannSumsToIntegral(Scene):
         axes.shift(DOWN * 0.8)
 
         labels = axes.get_axis_labels(
-            x_label=MathTex("x", color=X_COLOR),
+            x_label=MathTex("x", color=t.accent),
             y_label=MathTex("y")
         )
 
@@ -483,14 +466,14 @@ class RiemannSumsToIntegral(Scene):
 
         # Function
         func = lambda x: 0.5 * x**2 - x + 4
-        graph = axes.plot(func, x_range=[0.5, 4.5], color=FUNC_COLOR, stroke_width=3)
+        graph = axes.plot(func, x_range=[0.5, 4.5], color=t.primary, stroke_width=t.curve_stroke_width)
 
         # Show curve
         self.play(Create(graph), run_time=1.5)
         self.wait(0.5)
 
         # Function label (context, reduced opacity)
-        func_label = MathTex(r"f(x)", font_size=24, color=FUNC_COLOR)
+        func_label = MathTex(r"f(x)", font_size=t.label_size, color=t.primary)
         func_label.next_to(graph.get_end(), RIGHT)
         func_label.set_opacity(0.7)
         self.play(FadeIn(func_label))
@@ -503,15 +486,15 @@ class RiemannSumsToIntegral(Scene):
         # Bound lines with labels
         bound_a = DashedLine(
             axes.c2p(a, 0), axes.c2p(a, func(a)),
-            color=X_COLOR, stroke_width=2
+            color=t.accent, stroke_width=t.axis_stroke_width
         )
         bound_b = DashedLine(
             axes.c2p(b, 0), axes.c2p(b, func(b)),
-            color=X_COLOR, stroke_width=2
+            color=t.accent, stroke_width=t.axis_stroke_width
         )
 
-        label_a = MathTex("a=1", font_size=20, color=X_COLOR).next_to(bound_a, DOWN)
-        label_b = MathTex("b=4", font_size=20, color=X_COLOR).next_to(bound_b, DOWN)
+        label_a = MathTex("a=1", font_size=t.small_size, color=t.accent).next_to(bound_a, DOWN)
+        label_b = MathTex("b=4", font_size=t.small_size, color=t.accent).next_to(bound_b, DOWN)
 
         self.play(
             Create(bound_a), Create(bound_b),
@@ -520,7 +503,7 @@ class RiemannSumsToIntegral(Scene):
         self.wait(1)
 
         # Pose the question
-        question = Text("What is the area under the curve?", font_size=24)
+        question = Text("What is the area under the curve?", font_size=t.label_size)
         question.to_edge(UP)
         self.play(Write(question))
         self.wait(1)
@@ -532,8 +515,8 @@ class RiemannSumsToIntegral(Scene):
 
         # n display
         n_display = VGroup(
-            Text("Rectangles:", font_size=20),
-            MathTex("n = 4", font_size=28, color=HIGHLIGHT_COLOR)
+            Text("Rectangles:", font_size=t.small_size),
+            MathTex("n = 4", font_size=t.body_size, color=t.accent)
         ).arrange(RIGHT, buff=0.3).to_corner(UR)
 
         # First set of rectangles - use LaggedStart for rhythm
@@ -541,10 +524,10 @@ class RiemannSumsToIntegral(Scene):
             graph,
             x_range=[a, b],
             dx=(b - a) / 4,
-            color=[FUNC_COLOR, AREA_COLOR],
-            fill_opacity=0.6,
-            stroke_width=1,
-            stroke_color=WHITE,
+            color=[t.primary, t.tertiary],
+            fill_opacity=t.area_fill_opacity,
+            stroke_width=t.fine_stroke_width,
+            stroke_color=t.foreground,
         )
 
         # Staggered creation of rectangles (3b1b rhythm)
@@ -561,15 +544,15 @@ class RiemannSumsToIntegral(Scene):
                 graph,
                 x_range=[a, b],
                 dx=(b - a) / n,
-                color=[FUNC_COLOR, AREA_COLOR],
-                fill_opacity=0.6,
-                stroke_width=0.5 if n > 16 else 1,
-                stroke_color=WHITE,
+                color=[t.primary, t.tertiary],
+                fill_opacity=t.area_fill_opacity,
+                stroke_width=0.5 if n > 16 else t.fine_stroke_width,
+                stroke_color=t.foreground,
             )
 
             new_n_display = VGroup(
-                Text("Rectangles:", font_size=20),
-                MathTex(f"n = {n}", font_size=28, color=HIGHLIGHT_COLOR)
+                Text("Rectangles:", font_size=t.small_size),
+                MathTex(f"n = {n}", font_size=t.body_size, color=t.accent)
             ).arrange(RIGHT, buff=0.3).to_corner(UR)
 
             # Longer animation for larger n (building suspense)
@@ -587,7 +570,7 @@ class RiemannSumsToIntegral(Scene):
         # =====================================================================
 
         # Transform rectangles into smooth area
-        area = axes.get_area(graph, x_range=[a, b], color=AREA_COLOR, opacity=0.7)
+        area = axes.get_area(graph, x_range=[a, b], color=t.tertiary, opacity=0.7)
 
         self.play(
             Transform(rects, area),
@@ -603,10 +586,10 @@ class RiemannSumsToIntegral(Scene):
             r"\int_1^4 f(x) \, dx",
             r"=",
             r"\text{Exact Area}",
-            font_size=32,
+            font_size=t.body_size,
         )
-        integral[0].set_color(INTEGRAL_COLOR)
-        integral[2].set_color(AREA_COLOR)
+        integral[0].set_color(t.tertiary)
+        integral[2].set_color(t.tertiary)
         integral.to_edge(UP)
 
         self.play(Write(integral[0]))
@@ -614,23 +597,25 @@ class RiemannSumsToIntegral(Scene):
         self.play(Write(integral[1:]))
 
         # Final highlight
-        box = SurroundingRectangle(integral, color=HIGHLIGHT_COLOR, buff=0.1)
+        box = SurroundingRectangle(integral, color=t.accent, buff=0.1)
         self.play(Create(box))
         self.wait(2)
 
 
-class DerivativeIntegralRelation(Scene):
+class DerivativeIntegralRelation(ThemedScene):
     """
     Visualize the Fundamental Theorem of Calculus.
 
     3b1b Principles Applied:
     - Dual-space synchronized visualization
     - Show geometric relationship first
-    - Consistent color coding (f=BLUE, F=GREEN)
+    - Consistent color coding (f=primary, F=tertiary)
     - Equation evolution
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Two synchronized graphs
         # =====================================================================
@@ -668,30 +653,30 @@ class DerivativeIntegralRelation(Scene):
         x_tracker = ValueTracker(0.5)
 
         # Left: f(x) = 2x with area that accumulates
-        f_graph = axes_left.plot(lambda x: 2 * x, x_range=[0, 3.5], color=FUNC_COLOR)
+        f_graph = axes_left.plot(lambda x: 2 * x, x_range=[0, 3.5], color=t.primary)
 
         # Area under f that grows
         area = always_redraw(lambda: axes_left.get_area(
             f_graph,
             x_range=[0, x_tracker.get_value()],
-            color=AREA_COLOR,
-            opacity=0.5
+            color=t.tertiary,
+            opacity=t.area_fill_opacity
         ))
 
         # Vertical line at x
         f_line = always_redraw(lambda: DashedLine(
             axes_left.c2p(x_tracker.get_value(), 0),
             axes_left.c2p(x_tracker.get_value(), 2 * x_tracker.get_value()),
-            color=X_COLOR
+            color=t.accent
         ))
 
         # Right: F(x) = x^2, point that tracks accumulated area
-        F_graph = axes_right.plot(lambda x: x**2, x_range=[0, 3.2], color=INTEGRAL_COLOR)
+        F_graph = axes_right.plot(lambda x: x**2, x_range=[0, 3.2], color=t.tertiary)
 
         # Point on F that corresponds to the area
         F_point = always_redraw(lambda: Dot(
             axes_right.c2p(x_tracker.get_value(), x_tracker.get_value()**2),
-            color=INTEGRAL_COLOR,
+            color=t.tertiary,
             radius=0.12
         ))
 
@@ -699,14 +684,14 @@ class DerivativeIntegralRelation(Scene):
         F_line = always_redraw(lambda: DashedLine(
             axes_right.c2p(x_tracker.get_value(), 0),
             axes_right.c2p(x_tracker.get_value(), x_tracker.get_value()**2),
-            color=X_COLOR
+            color=t.accent
         ))
 
         # Labels (positioned with updaters)
-        label_left = MathTex("f(x) = 2x", font_size=24, color=FUNC_COLOR)
+        label_left = MathTex("f(x) = 2x", font_size=t.label_size, color=t.primary)
         label_left.next_to(axes_left, UP)
 
-        label_right = MathTex("F(x) = x^2", font_size=24, color=INTEGRAL_COLOR)
+        label_right = MathTex("F(x) = x^2", font_size=t.label_size, color=t.tertiary)
         label_right.next_to(axes_right, UP)
 
         # Show left side first
@@ -730,18 +715,18 @@ class DerivativeIntegralRelation(Scene):
         value_display = always_redraw(lambda: VGroup(
             MathTex(
                 rf"x = {x_tracker.get_value():.1f}",
-                font_size=24,
-                color=X_COLOR
+                font_size=t.label_size,
+                color=t.accent
             ),
             MathTex(
                 rf"\text{{Area}} = {x_tracker.get_value()**2:.2f}",
-                font_size=24,
-                color=AREA_COLOR
+                font_size=t.label_size,
+                color=t.tertiary
             ),
             MathTex(
                 rf"F(x) = {x_tracker.get_value()**2:.2f}",
-                font_size=24,
-                color=INTEGRAL_COLOR
+                font_size=t.label_size,
+                color=t.tertiary
             ),
         ).arrange(DOWN, aligned_edge=LEFT).to_corner(UR))
 
@@ -766,18 +751,18 @@ class DerivativeIntegralRelation(Scene):
         # The theorem - equation evolution
         theorem1 = MathTex(
             r"\frac{d}{dx}\left[ \int_0^x f(t)\,dt \right] = f(x)",
-            font_size=28,
+            font_size=t.body_size,
         )
-        theorem1[0][0:5].set_color(DERIV_COLOR)  # d/dx
-        theorem1[0][6:7].set_color(INTEGRAL_COLOR)  # integral
+        theorem1[0][0:5].set_color(t.secondary)  # d/dx
+        theorem1[0][6:7].set_color(t.tertiary)  # integral
         theorem1.to_edge(DOWN).shift(LEFT * 2)
 
         theorem2 = MathTex(
             r"\int f(x)\,dx = F(x) + C",
-            font_size=28,
+            font_size=t.body_size,
         )
-        theorem2[0][0].set_color(INTEGRAL_COLOR)
-        theorem2[0][-4:-2].set_color(INTEGRAL_COLOR)  # F(x)
+        theorem2[0][0].set_color(t.tertiary)
+        theorem2[0][-4:-2].set_color(t.tertiary)  # F(x)
         theorem2.to_edge(DOWN).shift(RIGHT * 2)
 
         self.play(Write(theorem1))
@@ -785,13 +770,13 @@ class DerivativeIntegralRelation(Scene):
         self.play(Write(theorem2))
 
         # Title
-        title = Text("Fundamental Theorem of Calculus", font_size=28, color=HIGHLIGHT_COLOR)
+        title = Text("Fundamental Theorem of Calculus", font_size=t.body_size, color=t.accent)
         title.to_edge(UP)
         self.play(Write(title))
         self.wait(2)
 
 
-class AreaAccumulation(Scene):
+class AreaAccumulation(ThemedScene):
     """
     Show how the integral F(x) represents accumulated area.
 
@@ -802,6 +787,8 @@ class AreaAccumulation(Scene):
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP
         # =====================================================================
@@ -814,8 +801,8 @@ class AreaAccumulation(Scene):
         )
         axes.shift(DOWN * 0.8)
         labels = axes.get_axis_labels(
-            x_label=MathTex("x", color=X_COLOR),
-            y_label=MathTex("f(x)", color=FUNC_COLOR)
+            x_label=MathTex("x", color=t.accent),
+            y_label=MathTex("f(x)", color=t.primary)
         )
 
         self.play(Create(axes), Write(labels), run_time=1.5)
@@ -824,7 +811,7 @@ class AreaAccumulation(Scene):
         func = lambda x: 0.3 * x**2 + 0.5
         antideriv = lambda x: 0.1 * x**3 + 0.5 * x  # Antiderivative
 
-        graph = axes.plot(func, x_range=[0.3, 4.5], color=FUNC_COLOR, stroke_width=3)
+        graph = axes.plot(func, x_range=[0.3, 4.5], color=t.primary, stroke_width=t.curve_stroke_width)
         self.play(Create(graph), run_time=1.5)
         self.wait(1)
 
@@ -838,7 +825,7 @@ class AreaAccumulation(Scene):
         area = always_redraw(lambda: axes.get_area(
             graph,
             x_range=[x_start, max(x_tracker.get_value(), x_start + 0.01)],
-            color=AREA_COLOR,
+            color=t.tertiary,
             opacity=0.6,
         ))
 
@@ -846,29 +833,29 @@ class AreaAccumulation(Scene):
         boundary_line = always_redraw(lambda: DashedLine(
             axes.c2p(x_tracker.get_value(), 0),
             axes.c2p(x_tracker.get_value(), func(x_tracker.get_value())),
-            color=X_COLOR,
-            stroke_width=2,
+            color=t.accent,
+            stroke_width=t.axis_stroke_width,
         ))
 
         # Moving point on curve
         boundary_point = always_redraw(lambda: Dot(
             axes.c2p(x_tracker.get_value(), func(x_tracker.get_value())),
-            color=X_COLOR,
+            color=t.accent,
             radius=0.1
         ))
 
         # Synchronized formula display
         area_formula = always_redraw(lambda: MathTex(
             rf"F({x_tracker.get_value():.1f}) = \int_{{{x_start}}}^{{{x_tracker.get_value():.1f}}} f(t)\,dt",
-            font_size=24,
-            tex_to_color_map={"F": INTEGRAL_COLOR, "f": FUNC_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"F": t.tertiary, "f": t.primary}
         ).to_corner(UR))
 
         # Numerical value
         area_value = always_redraw(lambda: MathTex(
             rf"= {antideriv(x_tracker.get_value()) - antideriv(x_start):.2f}",
-            font_size=24,
-            color=AREA_COLOR
+            font_size=t.label_size,
+            color=t.tertiary
         ).next_to(area_formula, DOWN, aligned_edge=RIGHT))
 
         # Show elements progressively
@@ -895,15 +882,15 @@ class AreaAccumulation(Scene):
         # =====================================================================
         insight = Text(
             "The integral accumulates area as x increases",
-            font_size=24,
-            color=HIGHLIGHT_COLOR
+            font_size=t.label_size,
+            color=t.accent
         )
         insight.to_edge(UP)
         self.play(Write(insight))
         self.wait(2)
 
 
-class PowerRuleDerivative(Scene):
+class PowerRuleDerivative(ThemedScene):
     """
     Visualize the power rule for derivatives.
 
@@ -915,6 +902,8 @@ class PowerRuleDerivative(Scene):
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP
         # =====================================================================
@@ -935,21 +924,21 @@ class PowerRuleDerivative(Scene):
         # =====================================================================
 
         # Functions
-        func_x2 = axes.plot(lambda x: x**2, x_range=[-2.2, 2.2], color=FUNC_COLOR)
-        deriv_2x = axes.plot(lambda x: 2 * x, x_range=[-2.2, 2.2], color=DERIV_COLOR)
+        func_x2 = axes.plot(lambda x: x**2, x_range=[-2.2, 2.2], color=t.primary)
+        deriv_2x = axes.plot(lambda x: 2 * x, x_range=[-2.2, 2.2], color=t.secondary)
 
         # Labels with consistent coloring
         label_x2 = MathTex(
             r"f(x) = x^2",
-            font_size=26,
-            tex_to_color_map={"f": FUNC_COLOR, "x": X_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"f": t.primary, "x": t.accent}
         )
         label_x2.to_corner(UL).shift(DOWN * 0.3)
 
         label_2x = MathTex(
             r"f'(x) = 2x",
-            font_size=26,
-            tex_to_color_map={"f'": DERIV_COLOR, "x": X_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"f'": t.secondary, "x": t.accent}
         )
         label_2x.next_to(label_x2, DOWN, aligned_edge=LEFT)
 
@@ -965,21 +954,21 @@ class PowerRuleDerivative(Scene):
         # PHASE 3: TRANSFORM TO x^3 and 3x^2
         # =====================================================================
 
-        func_x3 = axes.plot(lambda x: x**3, x_range=[-1.8, 1.8], color=FUNC_COLOR)
-        deriv_3x2 = axes.plot(lambda x: 3 * x**2, x_range=[-1.6, 1.6], color=DERIV_COLOR)
+        func_x3 = axes.plot(lambda x: x**3, x_range=[-1.8, 1.8], color=t.primary)
+        deriv_3x2 = axes.plot(lambda x: 3 * x**2, x_range=[-1.6, 1.6], color=t.secondary)
 
         # New labels - use TransformMatchingTex for smooth equation evolution
         new_label_x3 = MathTex(
             r"f(x) = x^3",
-            font_size=26,
-            tex_to_color_map={"f": FUNC_COLOR, "x": X_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"f": t.primary, "x": t.accent}
         )
         new_label_x3.to_corner(UL).shift(DOWN * 0.3)
 
         new_label_3x2 = MathTex(
             r"f'(x) = 3x^2",
-            font_size=26,
-            tex_to_color_map={"f'": DERIV_COLOR, "x": X_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"f'": t.secondary, "x": t.accent}
         )
         new_label_3x2.next_to(new_label_x3, DOWN, aligned_edge=LEFT)
 
@@ -997,20 +986,20 @@ class PowerRuleDerivative(Scene):
         # PHASE 4: TRANSFORM TO x^4 and 4x^3
         # =====================================================================
 
-        func_x4 = axes.plot(lambda x: x**4, x_range=[-1.5, 1.5], color=FUNC_COLOR)
-        deriv_4x3 = axes.plot(lambda x: 4 * x**3, x_range=[-1.4, 1.4], color=DERIV_COLOR)
+        func_x4 = axes.plot(lambda x: x**4, x_range=[-1.5, 1.5], color=t.primary)
+        deriv_4x3 = axes.plot(lambda x: 4 * x**3, x_range=[-1.4, 1.4], color=t.secondary)
 
         final_label_f = MathTex(
             r"f(x) = x^4",
-            font_size=26,
-            tex_to_color_map={"f": FUNC_COLOR, "x": X_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"f": t.primary, "x": t.accent}
         )
         final_label_f.to_corner(UL).shift(DOWN * 0.3)
 
         final_label_fp = MathTex(
             r"f'(x) = 4x^3",
-            font_size=26,
-            tex_to_color_map={"f'": DERIV_COLOR, "x": X_COLOR}
+            font_size=t.label_size,
+            tex_to_color_map={"f'": t.secondary, "x": t.accent}
         )
         final_label_fp.next_to(final_label_f, DOWN, aligned_edge=LEFT)
 
@@ -1036,22 +1025,22 @@ class PowerRuleDerivative(Scene):
         # The general power rule - the big reveal
         general_rule = MathTex(
             r"\frac{d}{dx}\left[ x^n \right] = n \cdot x^{n-1}",
-            font_size=40,
+            font_size=t.title_size,
         )
-        general_rule[0][0:4].set_color(DERIV_COLOR)  # d/dx
-        general_rule[0][5:7].set_color(FUNC_COLOR)   # x^n
-        general_rule[0][9].set_color(HIGHLIGHT_COLOR)  # n
-        general_rule[0][11:15].set_color(DERIV_COLOR)  # x^{n-1}
+        general_rule[0][0:4].set_color(t.secondary)  # d/dx
+        general_rule[0][5:7].set_color(t.primary)   # x^n
+        general_rule[0][9].set_color(t.accent)  # n
+        general_rule[0][11:15].set_color(t.secondary)  # x^{n-1}
         general_rule.move_to(DOWN * 2)
 
         # Highlight box
-        box = SurroundingRectangle(general_rule, color=HIGHLIGHT_COLOR, buff=0.2)
+        box = SurroundingRectangle(general_rule, color=t.accent, buff=0.2)
 
         self.play(Write(general_rule), run_time=1.5)
         self.play(Create(box))
 
         # Title
-        title = Text("The Power Rule", font_size=32, color=HIGHLIGHT_COLOR)
+        title = Text("The Power Rule", font_size=t.body_size, color=t.accent)
         title.to_edge(UP)
         self.play(Write(title))
 

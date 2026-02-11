@@ -4,7 +4,6 @@ Shows 3b1b principles in action
 """
 
 from manim import (
-    Scene,
     VGroup,
     Axes,
     Text,
@@ -23,13 +22,6 @@ from manim import (
     ValueTracker,
     always_redraw,
     SurroundingRectangle,
-    BLUE,
-    RED,
-    GREEN,
-    GREEN_D,
-    YELLOW,
-    ORANGE,
-    WHITE,
     UP,
     DOWN,
     LEFT,
@@ -40,355 +32,271 @@ from manim import (
     smooth,
 )
 
-# Consistent color palette
-FUNC_COLOR = BLUE
-DERIV_COLOR = RED
-X_COLOR = YELLOW
-AREA_COLOR = GREEN_D
-HIGHLIGHT_COLOR = YELLOW
+from themed_scene import ThemedScene
 
 
-class TangentLineDemo(Scene):
+class TangentLineDemo(ThemedScene):
     """
     Demonstrate tangent line moving along a curve.
     Shows: geometry first, progressive disclosure, synchronized updates.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Geometry first (no labels yet)
         # =====================================================================
         axes = Axes(
-            x_range=[-1, 4, 1],
+            x_range=[-3, 3, 1],
             y_range=[-1, 10, 2],
-            x_length=7,
+            x_length=8,
             y_length=5,
-            axis_config={"include_tip": True},
+            axis_config={"include_tip": True, "include_numbers": False},
         )
-        axes.shift(DOWN * 0.5 + LEFT * 1)
+        axes.shift(DOWN * 0.5)
 
+        # Show axes
         self.play(Create(axes), run_time=1)
         self.wait(0.5)
 
-        # Function: f(x) = x^2
+        # Function
         func = lambda x: x**2
         derivative = lambda x: 2 * x
 
-        graph = axes.plot(func, x_range=[-0.5, 3.2], color=FUNC_COLOR, stroke_width=3)
+        graph = axes.plot(func, x_range=[-2.5, 2.5], color=t.primary, stroke_width=t.curve_stroke_width)
 
-        # Show the curve first - let viewers see it
+        # Show curve first (geometry before symbols)
         self.play(Create(graph), run_time=2)
-        self.wait(1)  # Strategic pause
+        self.wait(1)
 
         # =====================================================================
-        # PHASE 2: INTRODUCE TANGENT - Visual before explanation
+        # PHASE 2: INTRODUCE tangent line (visual before formula)
         # =====================================================================
         x_tracker = ValueTracker(1.0)
 
-        # Point on curve (prominent)
+        # Point on curve
         point = always_redraw(lambda: Dot(
             axes.c2p(x_tracker.get_value(), func(x_tracker.get_value())),
-            color=X_COLOR,
+            color=t.accent,
             radius=0.12
         ))
 
-        # Tangent line that follows
-        def get_tangent_line():
+        # Tangent line
+        def get_tangent():
             x = x_tracker.get_value()
             slope = derivative(x)
             y = func(x)
-            x_extent = 1.5
-            start = axes.c2p(x - x_extent, y - slope * x_extent)
-            end = axes.c2p(x + x_extent, y + slope * x_extent)
-            return Line(start, end, color=DERIV_COLOR, stroke_width=3)
+            ext = 1.5
+            start = axes.c2p(x - ext, y - slope * ext)
+            end = axes.c2p(x + ext, y + slope * ext)
+            return Line(start, end, color=t.secondary, stroke_width=t.curve_stroke_width)
 
-        tangent = always_redraw(get_tangent_line)
+        tangent = always_redraw(get_tangent)
 
-        # Progressive disclosure: point first, then tangent
         self.play(FadeIn(point, scale=0.5))
-        self.wait(0.5)
+        self.wait(0.3)
         self.play(Create(tangent))
         self.wait(1)
 
         # =====================================================================
-        # PHASE 3: ADD SYNCHRONIZED DISPLAY
+        # PHASE 3: ADD LABELS (symbols after geometry)
         # =====================================================================
+        func_label = Text("f(x) = x²", font_size=t.body_size, color=t.primary)
+        func_label.to_corner(UP + LEFT).shift(DOWN * 0.3)
+
+        self.play(Write(func_label))
+
+        # Slope display
         slope_display = always_redraw(lambda: VGroup(
-            Text(f"x = {x_tracker.get_value():.1f}", font_size=24, color=X_COLOR),
-            Text(f"slope = {derivative(x_tracker.get_value()):.1f}", font_size=24, color=DERIV_COLOR),
+            Text(f"x = {x_tracker.get_value():.1f}", font_size=t.label_size, color=t.accent),
+            Text(f"slope = {derivative(x_tracker.get_value()):.1f}", font_size=t.label_size, color=t.secondary),
         ).arrange(DOWN, aligned_edge=LEFT).to_corner(UP + RIGHT))
 
         self.play(Write(slope_display))
         self.wait(1)
 
         # =====================================================================
-        # PHASE 4: ANIMATE - Strategic movements with pauses
+        # PHASE 4: ANIMATE - Show how tangent changes
         # =====================================================================
-        movements = [
-            (2.0, 2.5),   # Move to x=2
-            (0.5, 2),     # Move to x=0.5 (small slope)
-            (0.0, 1.5),   # Move to x=0 (slope = 0!)
-            (2.5, 2),     # Move back up
-        ]
-
-        for target_x, duration in movements:
-            self.play(
-                x_tracker.animate.set_value(target_x),
-                run_time=duration,
-                rate_func=smooth
-            )
-            self.wait(1)  # Pause at each key point
+        self.play(x_tracker.animate.set_value(2.5), run_time=3, rate_func=smooth)
+        self.wait(0.5)
+        self.play(x_tracker.animate.set_value(0), run_time=2, rate_func=smooth)
+        self.wait(0.5)
+        self.play(x_tracker.animate.set_value(-2), run_time=2, rate_func=smooth)
+        self.wait(0.5)
 
         # =====================================================================
-        # PHASE 5: RESOLUTION
+        # PHASE 5: KEY INSIGHT
         # =====================================================================
-        title = Text("Derivative = Slope of Tangent", font_size=28, color=HIGHLIGHT_COLOR)
-        title.to_edge(UP)
+        insight = Text("Tangent line slope = derivative", font_size=t.body_size, color=t.accent)
+        insight.to_edge(UP)
 
-        box = SurroundingRectangle(title, color=HIGHLIGHT_COLOR, buff=0.15)
-
-        self.play(Write(title))
-        self.play(Create(box))
+        box = SurroundingRectangle(insight, color=t.accent, buff=0.15)
+        self.play(Write(insight), Create(box))
         self.wait(2)
 
 
-class RiemannSumsDemo(Scene):
+class AreaUnderCurveDemo(ThemedScene):
     """
-    Riemann sums approaching integral.
-    Shows: LaggedStart rhythm, building suspense, geometry before symbols.
+    Demonstrate area under a curve with Riemann sum approximation.
+    Progressive: few rectangles -> many rectangles -> smooth area.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP
         # =====================================================================
         axes = Axes(
             x_range=[0, 5, 1],
-            y_range=[0, 8, 2],
+            y_range=[0, 6, 1],
             x_length=9,
             y_length=4.5,
-            axis_config={"include_tip": True},
+            axis_config={"include_tip": True, "include_numbers": False},
         )
         axes.shift(DOWN * 0.8)
 
         self.play(Create(axes), run_time=1)
+        self.wait(0.5)
 
         # Function
-        func = lambda x: 0.5 * x**2 - x + 4
-        graph = axes.plot(func, x_range=[0.5, 4.5], color=FUNC_COLOR, stroke_width=3)
+        func = lambda x: 0.3 * x**2 + 0.5
+        graph = axes.plot(func, x_range=[0.3, 4.5], color=t.primary, stroke_width=t.curve_stroke_width)
 
         self.play(Create(graph), run_time=1.5)
         self.wait(0.5)
 
+        # Label
+        func_text = Text("f(x) = 0.3x² + 0.5", font_size=t.label_size, color=t.primary)
+        func_text.next_to(graph.get_end(), RIGHT)
+        self.play(Write(func_text))
+        self.wait(0.5)
+
         # =====================================================================
-        # PHASE 2: ESTABLISH BOUNDS
+        # PHASE 2: SHOW RIEMANN RECTANGLES - Progressive refinement
         # =====================================================================
         a, b = 1, 4
 
-        bound_a = DashedLine(
-            axes.c2p(a, 0), axes.c2p(a, func(a)),
-            color=X_COLOR, stroke_width=2
-        )
-        bound_b = DashedLine(
-            axes.c2p(b, 0), axes.c2p(b, func(b)),
-            color=X_COLOR, stroke_width=2
-        )
+        # Bound lines
+        bound_a = DashedLine(axes.c2p(a, 0), axes.c2p(a, func(a)), color=t.accent, stroke_width=t.axis_stroke_width)
+        bound_b = DashedLine(axes.c2p(b, 0), axes.c2p(b, func(b)), color=t.accent, stroke_width=t.axis_stroke_width)
 
         self.play(Create(bound_a), Create(bound_b))
-        self.wait(1)
+        self.wait(0.5)
 
-        # Pose the question
-        question = Text("What is the area?", font_size=28)
-        question.to_edge(UP)
-        self.play(Write(question))
-        self.wait(1)
+        # Progressive rectangle refinement
+        n_values = [4, 8, 16, 32, 64]
 
-        # =====================================================================
-        # PHASE 3: BUILD WITH LAGGED START RHYTHM
-        # =====================================================================
-        n_values = [4, 8, 16, 32]
+        n_label = Text(f"n = {n_values[0]} rectangles", font_size=t.label_size)
+        n_label.to_corner(UP + RIGHT)
 
-        # First set - use LaggedStartMap for 3b1b rhythm
         rects = axes.get_riemann_rectangles(
-            graph,
-            x_range=[a, b],
-            dx=(b - a) / 4,
-            color=[FUNC_COLOR, AREA_COLOR],
-            fill_opacity=0.6,
-            stroke_width=1,
-            stroke_color=WHITE,
+            graph, x_range=[a, b], dx=(b - a) / n_values[0],
+            color=[t.primary, t.tertiary],
+            fill_opacity=t.area_fill_opacity,
+            stroke_width=t.fine_stroke_width,
+            stroke_color=t.foreground,
         )
 
-        n_label = Text("n = 4", font_size=28, color=HIGHLIGHT_COLOR).to_corner(UP + RIGHT)
-
-        # Staggered creation (key 3b1b rhythm pattern)
         self.play(
             LaggedStartMap(Create, rects, lag_ratio=0.15),
             Write(n_label),
-            run_time=2
+            run_time=2,
         )
         self.wait(1)
 
-        # Transform through increasing n
         for n in n_values[1:]:
             new_rects = axes.get_riemann_rectangles(
-                graph,
-                x_range=[a, b],
-                dx=(b - a) / n,
-                color=[FUNC_COLOR, AREA_COLOR],
-                fill_opacity=0.6,
-                stroke_width=0.5 if n > 16 else 1,
-                stroke_color=WHITE,
+                graph, x_range=[a, b], dx=(b - a) / n,
+                color=[t.primary, t.tertiary],
+                fill_opacity=t.area_fill_opacity,
+                stroke_width=0.5 if n > 16 else t.fine_stroke_width,
+                stroke_color=t.foreground,
             )
-
-            new_label = Text(f"n = {n}", font_size=28, color=HIGHLIGHT_COLOR).to_corner(UP + RIGHT)
-
-            # Building suspense - slower for larger n
-            duration = 1.0 if n <= 16 else 1.5
+            new_label = Text(f"n = {n} rectangles", font_size=t.label_size)
+            new_label.to_corner(UP + RIGHT)
 
             self.play(
                 Transform(rects, new_rects),
                 Transform(n_label, new_label),
-                run_time=duration,
+                run_time=1.5,
             )
-            self.wait(0.75)
+            self.wait(0.5)
 
         # =====================================================================
-        # PHASE 4: RESOLUTION
+        # PHASE 3: SMOOTH AREA
         # =====================================================================
-
-        # Transform rectangles into smooth area
-        area = axes.get_area(graph, x_range=[a, b], color=AREA_COLOR, opacity=0.7)
+        area = axes.get_area(graph, x_range=[a, b], color=t.tertiary, opacity=0.7)
 
         self.play(
             Transform(rects, area),
             FadeOut(n_label),
-            run_time=1.5
+            run_time=1.5,
         )
-        self.wait(0.5)
 
-        # Final reveal
-        self.play(FadeOut(question))
-
-        result = Text("Exact Area (the integral)", font_size=28, color=AREA_COLOR)
+        # Final text
+        result = Text("Area under the curve = integral!", font_size=t.body_size, color=t.accent)
         result.to_edge(UP)
-
-        box = SurroundingRectangle(result, color=HIGHLIGHT_COLOR, buff=0.1)
-
-        self.play(Write(result))
-        self.play(Create(box))
+        box = SurroundingRectangle(result, color=t.accent, buff=0.1)
+        self.play(Write(result), Create(box))
         self.wait(2)
 
 
-class DualSpaceDemo(Scene):
+class CircleAreaDemo(ThemedScene):
     """
-    Synchronized dual-space visualization.
-    Shows: multiple representations updating together.
+    Approximate circle area with inscribed polygons.
+    Shows: building suspense, LaggedStart, progressive disclosure.
     """
 
     def construct(self):
-        # =====================================================================
-        # PHASE 1: SETUP - Two graphs side by side
-        # =====================================================================
+        t = self.theme
 
-        # Left: f(x) = 2x
-        axes_left = Axes(
-            x_range=[0, 4, 1],
-            y_range=[-1, 8, 2],
-            x_length=5,
-            y_length=4,
-            axis_config={"include_tip": True},
-        )
-        axes_left.shift(LEFT * 3.5 + DOWN * 0.3)
+        title = Text("Area of a Circle", font_size=t.subtitle_size)
+        title.to_edge(UP)
+        self.play(Write(title))
 
-        # Right: F(x) = x^2
-        axes_right = Axes(
-            x_range=[0, 4, 1],
-            y_range=[-1, 10, 2],
-            x_length=5,
-            y_length=4,
-            axis_config={"include_tip": True},
-        )
-        axes_right.shift(RIGHT * 3.5 + DOWN * 0.3)
-
-        # Staggered creation
-        self.play(Create(axes_left), run_time=1)
-        self.play(Create(axes_right), run_time=1)
+        circle = Circle(radius=2, color=t.primary, stroke_width=t.curve_stroke_width)
+        self.play(Create(circle))
         self.wait(0.5)
 
-        # =====================================================================
-        # PHASE 2: BUILD SYNCHRONIZED RELATIONSHIP
-        # =====================================================================
+        # Progressive polygon approximation
+        n_sides_list = [3, 4, 6, 8, 12, 24, 48]
 
-        # Shared tracker
-        x_tracker = ValueTracker(0.5)
+        from manim import RegularPolygon
 
-        # Left: f(x) = 2x with growing area
-        f_graph = axes_left.plot(lambda x: 2 * x, x_range=[0, 3.5], color=FUNC_COLOR)
+        # First polygon
+        poly = RegularPolygon(n=3, color=t.accent, fill_opacity=t.shape_fill_opacity)
+        poly.scale(2)  # Match circle radius
 
-        area = always_redraw(lambda: axes_left.get_area(
-            f_graph,
-            x_range=[0, x_tracker.get_value()],
-            color=AREA_COLOR,
-            opacity=0.5
-        ))
+        n_display = Text(f"n = 3 sides", font_size=t.label_size)
+        n_display.to_corner(UP + RIGHT)
 
-        f_line = always_redraw(lambda: DashedLine(
-            axes_left.c2p(x_tracker.get_value(), 0),
-            axes_left.c2p(x_tracker.get_value(), 2 * x_tracker.get_value()),
-            color=X_COLOR
-        ))
-
-        # Right: F(x) = x^2, point tracking area
-        F_graph = axes_right.plot(lambda x: x**2, x_range=[0, 3.2], color=GREEN)
-
-        F_point = always_redraw(lambda: Dot(
-            axes_right.c2p(x_tracker.get_value(), x_tracker.get_value()**2),
-            color=GREEN,
-            radius=0.12
-        ))
-
-        F_line = always_redraw(lambda: DashedLine(
-            axes_right.c2p(x_tracker.get_value(), 0),
-            axes_right.c2p(x_tracker.get_value(), x_tracker.get_value()**2),
-            color=X_COLOR
-        ))
-
-        # Labels
-        label_left = Text("f(x) = 2x", font_size=24, color=FUNC_COLOR)
-        label_left.next_to(axes_left, UP)
-
-        label_right = Text("F(x) = x² (area)", font_size=24, color=GREEN)
-        label_right.next_to(axes_right, UP)
-
-        # Progressive disclosure
-        self.play(Create(f_graph), Write(label_left))
+        self.play(Create(poly), Write(n_display))
         self.wait(0.5)
 
-        self.play(FadeIn(area), Create(f_line))
-        self.wait(1)
+        for n in n_sides_list[1:]:
+            new_poly = RegularPolygon(n=n, color=t.accent, fill_opacity=t.shape_fill_opacity)
+            new_poly.scale(2)
 
-        self.play(Create(F_graph), Write(label_right))
-        self.play(FadeIn(F_point), Create(F_line))
-        self.wait(1)
+            new_display = Text(f"n = {n} sides", font_size=t.label_size)
+            new_display.to_corner(UP + RIGHT)
 
-        # =====================================================================
-        # PHASE 3: ANIMATE SYNCHRONIZED UPDATE
-        # =====================================================================
+            self.play(
+                Transform(poly, new_poly),
+                Transform(n_display, new_display),
+                run_time=1,
+            )
+            self.wait(0.3)
 
-        # Value display
-        value_display = always_redraw(lambda: VGroup(
-            Text(f"x = {x_tracker.get_value():.1f}", font_size=22, color=X_COLOR),
-            Text(f"Area = {x_tracker.get_value()**2:.2f}", font_size=22, color=AREA_COLOR),
-        ).arrange(DOWN, aligned_edge=LEFT).to_corner(UP + RIGHT))
+        # Fill the circle
+        filled = Circle(radius=2, color=t.tertiary, fill_opacity=t.area_fill_opacity, stroke_width=t.curve_stroke_width)
+        self.play(Transform(poly, filled), run_time=1.5)
 
-        self.play(Write(value_display))
-        self.wait(0.5)
-
-        # Watch both spaces update together
-        self.play(x_tracker.animate.set_value(2.5), run_time=4, rate_func=smooth)
-        self.wait(1)
-        self.play(x_tracker.animate.set_value(1.0), run_time=2)
-        self.wait(1)
-        self.play(x_tracker.animate.set_value(3.0), run_time=2)
+        # Formula
+        formula = Text("A = pi * r²", font_size=t.subtitle_size, color=t.accent)
+        formula.to_edge(DOWN)
+        box = SurroundingRectangle(formula, color=t.accent, buff=0.15)
+        self.play(Write(formula), Create(box))
         self.wait(2)

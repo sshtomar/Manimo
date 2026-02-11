@@ -4,7 +4,6 @@ Multiple animated proofs showing a² + b² = c²
 """
 
 from manim import (
-    Scene,
     VGroup,
     Polygon,
     Square,
@@ -25,16 +24,6 @@ from manim import (
     AnimationGroup,
     Rotate,
     Circumscribe,
-    BLUE,
-    RED,
-    GREEN,
-    YELLOW,
-    ORANGE,
-    PURPLE,
-    WHITE,
-    GREY,
-    PINK,
-    TEAL,
     UP,
     DOWN,
     LEFT,
@@ -45,14 +34,18 @@ from manim import (
     config,
 )
 
+from themed_scene import ThemedScene
 
-class PythagoreanIntro(Scene):
+
+class PythagoreanIntro(ThemedScene):
     """
     Introduction to the Pythagorean Theorem with a simple right triangle.
     """
 
     def construct(self):
-        title = Text("The Pythagorean Theorem", font_size=40)
+        t = self.theme
+
+        title = Text("The Pythagorean Theorem", font_size=t.title_size)
         self.play(Write(title))
         self.wait(1)
         self.play(title.animate.to_edge(UP))
@@ -65,10 +58,10 @@ class PythagoreanIntro(Scene):
             ORIGIN,
             RIGHT * a,
             RIGHT * a + UP * b,
-            color=WHITE,
-            fill_color=BLUE,
-            fill_opacity=0.3,
-            stroke_width=3,
+            color=t.foreground,
+            fill_color=t.primary,
+            fill_opacity=t.shape_fill_opacity,
+            stroke_width=t.curve_stroke_width,
         )
         triangle.move_to(ORIGIN)
 
@@ -77,16 +70,16 @@ class PythagoreanIntro(Scene):
         # Label the sides
         # Side a (bottom)
         brace_a = Brace(Line(triangle.get_vertices()[0], triangle.get_vertices()[1]), DOWN)
-        label_a = MathTex("a", font_size=32, color=GREEN)
+        label_a = MathTex("a", font_size=t.subtitle_size, color=t.tertiary)
         label_a.next_to(brace_a, DOWN)
 
         # Side b (right)
         brace_b = Brace(Line(triangle.get_vertices()[1], triangle.get_vertices()[2]), RIGHT)
-        label_b = MathTex("b", font_size=32, color=RED)
+        label_b = MathTex("b", font_size=t.subtitle_size, color=t.secondary)
         label_b.next_to(brace_b, RIGHT)
 
         # Side c (hypotenuse)
-        label_c = MathTex("c", font_size=32, color=YELLOW)
+        label_c = MathTex("c", font_size=t.subtitle_size, color=t.accent)
         hyp_center = (triangle.get_vertices()[0] + triangle.get_vertices()[2]) / 2
         label_c.move_to(hyp_center + LEFT * 0.4 + UP * 0.2)
 
@@ -99,21 +92,21 @@ class PythagoreanIntro(Scene):
         )
 
         # Right angle marker
-        right_angle = Square(side_length=0.3, color=WHITE, fill_opacity=0)
+        right_angle = Square(side_length=0.3, color=t.foreground, fill_opacity=0)
         right_angle.move_to(triangle.get_vertices()[1] + LEFT * 0.15 + UP * 0.15)
         self.play(Create(right_angle))
 
         self.wait(1)
 
         # The theorem
-        theorem = MathTex(r"a^2 + b^2 = c^2", font_size=48, color=YELLOW)
+        theorem = MathTex(r"a^2 + b^2 = c^2", font_size=t.title_size, color=t.accent)
         theorem.to_edge(DOWN)
         self.play(Write(theorem))
 
         self.wait(2)
 
 
-class BhaskaraProof(Scene):
+class BhaskaraProof(ThemedScene):
     """
     Bhaskara's proof: Dissect the square on the hypotenuse
     into 4 triangles plus a smaller square.
@@ -121,8 +114,10 @@ class BhaskaraProof(Scene):
     """
 
     def construct(self):
-        title = Text("Bhaskara's Proof", font_size=36)
-        subtitle = Text('"Behold!"', font_size=28, color=YELLOW)
+        t = self.theme
+
+        title = Text("Bhaskara's Proof", font_size=t.subtitle_size)
+        subtitle = Text('"Behold!"', font_size=t.body_size, color=t.accent)
         title.to_edge(UP)
         subtitle.next_to(title, DOWN)
 
@@ -145,19 +140,19 @@ class BhaskaraProof(Scene):
                 ORIGIN,
                 RIGHT * a,
                 RIGHT * a + UP * b,
-                color=WHITE,
+                color=t.foreground,
                 fill_color=color,
                 fill_opacity=0.7,
-                stroke_width=2,
+                stroke_width=t.axis_stroke_width,
             )
 
         # Create 4 triangles
-        colors = [BLUE, GREEN, ORANGE, PURPLE]
+        colors = [t.primary, t.tertiary, t.accent2, t.accent]
         triangles = VGroup()
 
         for i, color in enumerate(colors):
-            t = create_right_triangle(a, b, color)
-            triangles.add(t)
+            tri = create_right_triangle(a, b, color)
+            triangles.add(tri)
 
         # Arrange triangles in the Bhaskara configuration
         # Triangle 0: bottom left corner, pointing up-right
@@ -179,36 +174,36 @@ class BhaskaraProof(Scene):
         inner_side = abs(b - a)
         inner_square = Square(
             side_length=inner_side,
-            color=YELLOW,
-            fill_color=YELLOW,
+            color=t.accent,
+            fill_color=t.accent,
             fill_opacity=0.7,
-            stroke_width=2,
+            stroke_width=t.axis_stroke_width,
         )
         inner_square.move_to(large_square_center)
 
         # Outer square (boundary of c-square)
-        outer_square = Square(side_length=c, color=WHITE, stroke_width=3)
+        outer_square = Square(side_length=c, color=t.foreground, stroke_width=t.curve_stroke_width)
         outer_square.move_to(large_square_center)
 
         # Labels
-        c_label = MathTex("c", font_size=28)
+        c_label = MathTex("c", font_size=t.body_size)
         c_label.next_to(outer_square, DOWN)
 
         self.play(Create(outer_square), Write(c_label))
         self.wait(0.5)
 
         self.play(
-            AnimationGroup(*[FadeIn(t) for t in triangles], lag_ratio=0.3),
+            AnimationGroup(*[FadeIn(tri) for tri in triangles], lag_ratio=0.3),
         )
         self.play(FadeIn(inner_square))
         self.wait(1)
 
         # Area equation on the right
-        equation_title = Text("Area of c² square:", font_size=24)
+        equation_title = Text("Area of c² square:", font_size=t.label_size)
         equation_title.to_edge(RIGHT).shift(UP * 2)
 
         area_eq = MathTex(
-            r"c^2 = 4 \cdot \frac{1}{2}ab + (b-a)^2", font_size=28
+            r"c^2 = 4 \cdot \frac{1}{2}ab + (b-a)^2", font_size=t.body_size
         )
         area_eq.next_to(equation_title, DOWN, buff=0.5)
 
@@ -216,21 +211,21 @@ class BhaskaraProof(Scene):
         self.play(Write(area_eq))
 
         # Simplify
-        step1 = MathTex(r"c^2 = 2ab + b^2 - 2ab + a^2", font_size=28)
+        step1 = MathTex(r"c^2 = 2ab + b^2 - 2ab + a^2", font_size=t.body_size)
         step1.next_to(area_eq, DOWN, buff=0.3)
 
-        step2 = MathTex(r"c^2 = a^2 + b^2", font_size=32, color=YELLOW)
+        step2 = MathTex(r"c^2 = a^2 + b^2", font_size=t.subtitle_size, color=t.accent)
         step2.next_to(step1, DOWN, buff=0.3)
 
         self.play(Write(step1))
         self.wait(0.5)
         self.play(Write(step2))
 
-        self.play(Circumscribe(step2, color=YELLOW))
+        self.play(Circumscribe(step2, color=t.accent))
         self.wait(2)
 
 
-class RearrangementProof(Scene):
+class RearrangementProof(ThemedScene):
     """
     Classic rearrangement proof:
     Two squares of side (a+b) partitioned differently
@@ -238,7 +233,9 @@ class RearrangementProof(Scene):
     """
 
     def construct(self):
-        title = Text("Rearrangement Proof", font_size=36)
+        t = self.theme
+
+        title = Text("Rearrangement Proof", font_size=t.subtitle_size)
         title.to_edge(UP)
         self.play(Write(title))
 
@@ -251,7 +248,7 @@ class RearrangementProof(Scene):
         left_center = LEFT * 3.5
 
         # Create the outer square
-        left_outer = Square(side_length=total, color=WHITE, stroke_width=2)
+        left_outer = Square(side_length=total, color=t.foreground, stroke_width=t.axis_stroke_width)
         left_outer.move_to(left_center)
 
         # Create the triangles for left configuration
@@ -260,14 +257,14 @@ class RearrangementProof(Scene):
                 ORIGIN,
                 RIGHT * a,
                 UP * b,
-                color=WHITE,
+                color=t.foreground,
                 fill_color=color,
                 fill_opacity=0.7,
-                stroke_width=1.5,
+                stroke_width=t.fine_stroke_width,
             )
 
         left_triangles = VGroup()
-        tri_colors = [BLUE, GREEN, ORANGE, PURPLE]
+        tri_colors = [t.primary, t.tertiary, t.accent2, t.accent]
 
         for color in tri_colors:
             left_triangles.add(right_triangle(a, b, color))
@@ -297,27 +294,27 @@ class RearrangementProof(Scene):
         )
 
         # a² square in top-left area
-        a_square = Square(side_length=a, color=RED, fill_color=RED, fill_opacity=0.5)
+        a_square = Square(side_length=a, color=t.secondary, fill_color=t.secondary, fill_opacity=t.area_fill_opacity)
         a_square.move_to(left_center + LEFT * b / 2 + UP * b / 2)
 
         # b² square in bottom-right area
-        b_square = Square(side_length=b, color=TEAL, fill_color=TEAL, fill_opacity=0.5)
+        b_square = Square(side_length=b, color=t.primary, fill_color=t.primary, fill_opacity=t.area_fill_opacity)
         b_square.move_to(left_center + RIGHT * a / 2 + DOWN * a / 2)
 
         # Labels for left config
-        left_label = Text("Configuration 1", font_size=22)
+        left_label = Text("Configuration 1", font_size=t.small_size)
         left_label.next_to(left_outer, DOWN, buff=0.3)
 
-        a_label = MathTex("a^2", font_size=24, color=RED)
+        a_label = MathTex("a^2", font_size=t.label_size, color=t.secondary)
         a_label.move_to(a_square.get_center())
 
-        b_label = MathTex("b^2", font_size=24, color=TEAL)
+        b_label = MathTex("b^2", font_size=t.label_size, color=t.primary)
         b_label.move_to(b_square.get_center())
 
         # Right configuration: (a+b)² square with 4 triangles + c² square
         right_center = RIGHT * 3.5
 
-        right_outer = Square(side_length=total, color=WHITE, stroke_width=2)
+        right_outer = Square(side_length=total, color=t.foreground, stroke_width=t.axis_stroke_width)
         right_outer.move_to(right_center)
 
         right_triangles = VGroup()
@@ -364,45 +361,45 @@ class RearrangementProof(Scene):
             right_center + LEFT * total / 2 + DOWN * total / 2 + RIGHT * total + UP * a,  # right vertex
             right_center + LEFT * total / 2 + DOWN * total / 2 + RIGHT * b + UP * total,  # top vertex
             right_center + LEFT * total / 2 + DOWN * total / 2 + UP * b,  # left vertex
-            color=YELLOW,
-            fill_color=YELLOW,
-            fill_opacity=0.5,
-            stroke_width=2,
+            color=t.accent,
+            fill_color=t.accent,
+            fill_opacity=t.area_fill_opacity,
+            stroke_width=t.axis_stroke_width,
         )
 
-        right_label = Text("Configuration 2", font_size=22)
+        right_label = Text("Configuration 2", font_size=t.small_size)
         right_label.next_to(right_outer, DOWN, buff=0.3)
 
-        c_label = MathTex("c^2", font_size=28, color=YELLOW)
+        c_label = MathTex("c^2", font_size=t.body_size, color=t.accent)
         c_label.move_to(right_center)
 
         # Show left configuration
         self.play(Create(left_outer))
-        self.play(*[FadeIn(t) for t in left_triangles])
+        self.play(*[FadeIn(tri) for tri in left_triangles])
         self.play(FadeIn(a_square), FadeIn(b_square))
         self.play(Write(a_label), Write(b_label), Write(left_label))
         self.wait(1)
 
         # Show right configuration
         self.play(Create(right_outer))
-        self.play(*[FadeIn(t) for t in right_triangles])
+        self.play(*[FadeIn(tri) for tri in right_triangles])
         self.play(FadeIn(c_square))
         self.play(Write(c_label), Write(right_label))
         self.wait(1)
 
         # The key insight
         equation1 = MathTex(
-            r"\text{Same outer square } (a+b)^2", font_size=28
+            r"\text{Same outer square } (a+b)^2", font_size=t.body_size
         )
         equation1.to_edge(DOWN).shift(UP * 1.5)
 
         equation2 = MathTex(
-            r"\text{Same 4 triangles}", font_size=28
+            r"\text{Same 4 triangles}", font_size=t.body_size
         )
         equation2.next_to(equation1, DOWN, buff=0.2)
 
         equation3 = MathTex(
-            r"\Rightarrow a^2 + b^2 = c^2", font_size=36, color=YELLOW
+            r"\Rightarrow a^2 + b^2 = c^2", font_size=t.subtitle_size, color=t.accent
         )
         equation3.next_to(equation2, DOWN, buff=0.3)
 
@@ -410,17 +407,19 @@ class RearrangementProof(Scene):
         self.play(Write(equation2))
         self.play(Write(equation3))
 
-        self.play(Circumscribe(equation3, color=YELLOW))
+        self.play(Circumscribe(equation3, color=t.accent))
         self.wait(2)
 
 
-class AreaBasedProof(Scene):
+class AreaBasedProof(ThemedScene):
     """
     Direct area comparison: Build squares on each side of the triangle.
     """
 
     def construct(self):
-        title = Text("Area-Based Proof", font_size=36)
+        t = self.theme
+
+        title = Text("Area-Based Proof", font_size=t.subtitle_size)
         title.to_edge(UP)
         self.play(Write(title))
 
@@ -433,10 +432,10 @@ class AreaBasedProof(Scene):
             ORIGIN,
             RIGHT * a,
             RIGHT * a + UP * b,
-            color=WHITE,
-            fill_color=GREY,
-            fill_opacity=0.3,
-            stroke_width=3,
+            color=t.foreground,
+            fill_color=t.muted,
+            fill_opacity=t.shape_fill_opacity,
+            stroke_width=t.curve_stroke_width,
         )
         triangle.move_to(LEFT * 1)
 
@@ -449,19 +448,19 @@ class AreaBasedProof(Scene):
         self.wait(0.5)
 
         # Square on side a (bottom)
-        a_square = Square(side_length=a, color=GREEN, fill_color=GREEN, fill_opacity=0.5)
+        a_square = Square(side_length=a, color=t.tertiary, fill_color=t.tertiary, fill_opacity=t.area_fill_opacity)
         a_square.next_to(Line(v0, v1), DOWN, buff=0)
-        a_label = MathTex(r"a^2", font_size=28, color=GREEN)
+        a_label = MathTex(r"a^2", font_size=t.body_size, color=t.tertiary)
         a_label.move_to(a_square.get_center())
 
         # Square on side b (right)
-        b_square = Square(side_length=b, color=RED, fill_color=RED, fill_opacity=0.5)
+        b_square = Square(side_length=b, color=t.secondary, fill_color=t.secondary, fill_opacity=t.area_fill_opacity)
         b_square.next_to(Line(v1, v2), RIGHT, buff=0)
-        b_label = MathTex(r"b^2", font_size=28, color=RED)
+        b_label = MathTex(r"b^2", font_size=t.body_size, color=t.secondary)
         b_label.move_to(b_square.get_center())
 
         # Square on side c (hypotenuse) - needs rotation
-        c_square = Square(side_length=c, color=YELLOW, fill_color=YELLOW, fill_opacity=0.5)
+        c_square = Square(side_length=c, color=t.accent, fill_color=t.accent, fill_opacity=t.area_fill_opacity)
         # Calculate rotation angle of hypotenuse
         angle = np.arctan2(b, -a)  # angle from v2 to v0
         c_square.rotate(angle + PI / 2)  # perpendicular to hypotenuse
@@ -472,7 +471,7 @@ class AreaBasedProof(Scene):
         perp_direction = np.array([-hyp_direction[1], hyp_direction[0], 0])
         c_square.move_to(hyp_center + perp_direction * c / 2)
 
-        c_label = MathTex(r"c^2", font_size=28, color=YELLOW)
+        c_label = MathTex(r"c^2", font_size=t.body_size, color=t.accent)
         c_label.move_to(c_square.get_center())
 
         # Animate adding squares
@@ -486,27 +485,29 @@ class AreaBasedProof(Scene):
         # Show the equation
         equation = MathTex(
             r"\text{Area}(a^2) + \text{Area}(b^2) = \text{Area}(c^2)",
-            font_size=28,
+            font_size=t.body_size,
         )
         equation.to_edge(DOWN).shift(UP * 0.8)
 
-        final = MathTex(r"a^2 + b^2 = c^2", font_size=40, color=YELLOW)
+        final = MathTex(r"a^2 + b^2 = c^2", font_size=t.title_size, color=t.accent)
         final.next_to(equation, DOWN, buff=0.3)
 
         self.play(Write(equation))
         self.play(Write(final))
 
-        self.play(Circumscribe(final, color=YELLOW))
+        self.play(Circumscribe(final, color=t.accent))
         self.wait(2)
 
 
-class EuclideanProof(Scene):
+class EuclideanProof(ThemedScene):
     """
     Euclid's proof using similar triangles and altitude to hypotenuse.
     """
 
     def construct(self):
-        title = Text("Euclid's Proof (Similar Triangles)", font_size=32)
+        t = self.theme
+
+        title = Text("Euclid's Proof (Similar Triangles)", font_size=t.subtitle_size)
         title.to_edge(UP)
         self.play(Write(title))
 
@@ -531,18 +532,18 @@ class EuclideanProof(Scene):
 
         triangle = Polygon(
             A, B, C,
-            color=WHITE,
-            fill_color=BLUE,
-            fill_opacity=0.2,
-            stroke_width=3,
+            color=t.foreground,
+            fill_color=t.primary,
+            fill_opacity=t.subtle_fill_opacity,
+            stroke_width=t.curve_stroke_width,
         )
 
         self.play(Create(triangle))
 
         # Labels
-        label_A = MathTex("A", font_size=24).next_to(A, LEFT)
-        label_B = MathTex("B", font_size=24).next_to(B, RIGHT)
-        label_C = MathTex("C", font_size=24).next_to(C, UP)
+        label_A = MathTex("A", font_size=t.label_size).next_to(A, LEFT)
+        label_B = MathTex("B", font_size=t.label_size).next_to(B, RIGHT)
+        label_C = MathTex("C", font_size=t.label_size).next_to(C, UP)
 
         self.play(Write(label_A), Write(label_B), Write(label_C))
 
@@ -573,22 +574,22 @@ class EuclideanProof(Scene):
 
         triangle2 = Polygon(
             A, C, B,
-            color=WHITE,
-            fill_color=BLUE,
-            fill_opacity=0.2,
-            stroke_width=3,
+            color=t.foreground,
+            fill_color=t.primary,
+            fill_opacity=t.subtle_fill_opacity,
+            stroke_width=t.curve_stroke_width,
         )
 
         self.play(Create(triangle2))
 
-        label_A = MathTex("A", font_size=24).next_to(A, DOWN + LEFT)
-        label_B = MathTex("B", font_size=24).next_to(B, DOWN + RIGHT)
-        label_C = MathTex("C", font_size=24).next_to(C, UP)
+        label_A = MathTex("A", font_size=t.label_size).next_to(A, DOWN + LEFT)
+        label_B = MathTex("B", font_size=t.label_size).next_to(B, DOWN + RIGHT)
+        label_C = MathTex("C", font_size=t.label_size).next_to(C, UP)
 
         self.play(Write(label_A), Write(label_B), Write(label_C))
 
         # Right angle marker at C
-        right_angle = Square(side_length=0.25, color=WHITE, fill_opacity=0)
+        right_angle = Square(side_length=0.25, color=t.foreground, fill_opacity=0)
         right_angle.move_to(C + DOWN * 0.125 + RIGHT * 0.125)
         self.play(Create(right_angle))
 
@@ -596,18 +597,18 @@ class EuclideanProof(Scene):
         # Find foot of altitude H
         AB = B - A
         AC = C - A
-        t = np.dot(AC, AB) / np.dot(AB, AB)
-        H = A + t * AB
+        param = np.dot(AC, AB) / np.dot(AB, AB)
+        H = A + param * AB
 
-        altitude = Line(C, H, color=YELLOW, stroke_width=3)
-        label_H = MathTex("H", font_size=24).next_to(H, DOWN)
+        altitude = Line(C, H, color=t.accent, stroke_width=t.curve_stroke_width)
+        label_H = MathTex("H", font_size=t.label_size).next_to(H, DOWN)
 
         self.play(Create(altitude), Write(label_H))
 
         # Highlight the three similar triangles
         explanation = VGroup(
-            Text("Three similar triangles:", font_size=22),
-            MathTex(r"\triangle ACB \sim \triangle AHC \sim \triangle CHB", font_size=24),
+            Text("Three similar triangles:", font_size=t.small_size),
+            MathTex(r"\triangle ACB \sim \triangle AHC \sim \triangle CHB", font_size=t.label_size),
         )
         explanation.arrange(DOWN, buff=0.2)
         explanation.to_edge(RIGHT).shift(UP * 0.5)
@@ -617,10 +618,10 @@ class EuclideanProof(Scene):
 
         # Show the proportions
         props = VGroup(
-            MathTex(r"\frac{AC}{AB} = \frac{AH}{AC}", font_size=24, color=GREEN),
-            MathTex(r"\Rightarrow AC^2 = AB \cdot AH", font_size=24, color=GREEN),
-            MathTex(r"\frac{BC}{AB} = \frac{BH}{BC}", font_size=24, color=RED),
-            MathTex(r"\Rightarrow BC^2 = AB \cdot BH", font_size=24, color=RED),
+            MathTex(r"\frac{AC}{AB} = \frac{AH}{AC}", font_size=t.label_size, color=t.tertiary),
+            MathTex(r"\Rightarrow AC^2 = AB \cdot AH", font_size=t.label_size, color=t.tertiary),
+            MathTex(r"\frac{BC}{AB} = \frac{BH}{BC}", font_size=t.label_size, color=t.secondary),
+            MathTex(r"\Rightarrow BC^2 = AB \cdot BH", font_size=t.label_size, color=t.secondary),
         )
         props.arrange(DOWN, buff=0.2, aligned_edge=LEFT)
         props.to_edge(RIGHT).shift(DOWN * 1.5)
@@ -634,8 +635,8 @@ class EuclideanProof(Scene):
 
         # Final step
         final = VGroup(
-            MathTex(r"AC^2 + BC^2 = AB(AH + BH) = AB^2", font_size=26),
-            MathTex(r"a^2 + b^2 = c^2", font_size=36, color=YELLOW),
+            MathTex(r"AC^2 + BC^2 = AB(AH + BH) = AB^2", font_size=t.label_size),
+            MathTex(r"a^2 + b^2 = c^2", font_size=t.subtitle_size, color=t.accent),
         )
         final.arrange(DOWN, buff=0.3)
         final.to_edge(DOWN)
@@ -643,18 +644,20 @@ class EuclideanProof(Scene):
         self.play(Write(final[0]))
         self.play(Write(final[1]))
 
-        self.play(Circumscribe(final[1], color=YELLOW))
+        self.play(Circumscribe(final[1], color=t.accent))
         self.wait(2)
 
 
-class PresidentialProof(Scene):
+class PresidentialProof(ThemedScene):
     """
     James Garfield's trapezoid proof (before he became US President).
     """
 
     def construct(self):
-        title = Text("Garfield's Trapezoid Proof", font_size=32)
-        subtitle = Text("(James A. Garfield, 1876)", font_size=20, color=GREY)
+        t = self.theme
+
+        title = Text("Garfield's Trapezoid Proof", font_size=t.subtitle_size)
+        subtitle = Text("(James A. Garfield, 1876)", font_size=t.small_size, color=t.muted)
         title.to_edge(UP)
         subtitle.next_to(title, DOWN)
 
@@ -680,8 +683,8 @@ class PresidentialProof(Scene):
 
         trapezoid = Polygon(
             v0, v1, v2, v3,
-            color=WHITE,
-            stroke_width=2,
+            color=t.foreground,
+            stroke_width=t.axis_stroke_width,
         )
         trapezoid.move_to(LEFT * 1)
 
@@ -694,51 +697,51 @@ class PresidentialProof(Scene):
         # First right triangle (bottom-left)
         tri1 = Polygon(
             v0, v0 + RIGHT * a, v3,
-            color=BLUE,
-            fill_color=BLUE,
-            fill_opacity=0.5,
-            stroke_width=2,
+            color=t.primary,
+            fill_color=t.primary,
+            fill_opacity=t.area_fill_opacity,
+            stroke_width=t.axis_stroke_width,
         )
 
         # Second right triangle (bottom-right portion)
         # From v0 + RIGHT*a to v1 to v2
         tri2 = Polygon(
             v0 + RIGHT * a, v1, v2,
-            color=GREEN,
-            fill_color=GREEN,
-            fill_opacity=0.5,
-            stroke_width=2,
+            color=t.tertiary,
+            fill_color=t.tertiary,
+            fill_opacity=t.area_fill_opacity,
+            stroke_width=t.axis_stroke_width,
         )
 
         # Middle right triangle (on hypotenuse)
         tri3 = Polygon(
             v3, v0 + RIGHT * a, v2,
-            color=YELLOW,
-            fill_color=YELLOW,
-            fill_opacity=0.5,
-            stroke_width=2,
+            color=t.accent,
+            fill_color=t.accent,
+            fill_opacity=t.area_fill_opacity,
+            stroke_width=t.axis_stroke_width,
         )
 
         self.play(FadeIn(tri1), FadeIn(tri2), FadeIn(tri3))
 
         # Labels
-        label_a1 = MathTex("a", font_size=20, color=BLUE)
+        label_a1 = MathTex("a", font_size=t.small_size, color=t.primary)
         label_a1.next_to(Line(v0, v0 + RIGHT * a), DOWN, buff=0.1)
 
-        label_b1 = MathTex("b", font_size=20, color=BLUE)
+        label_b1 = MathTex("b", font_size=t.small_size, color=t.primary)
         label_b1.next_to(Line(v0, v3), LEFT, buff=0.1)
 
-        label_a2 = MathTex("a", font_size=20, color=GREEN)
+        label_a2 = MathTex("a", font_size=t.small_size, color=t.tertiary)
         label_a2.next_to(Line(v1, v2), RIGHT, buff=0.1)
 
-        label_b2 = MathTex("b", font_size=20, color=GREEN)
+        label_b2 = MathTex("b", font_size=t.small_size, color=t.tertiary)
         label_b2.next_to(Line(v0 + RIGHT * a, v1), DOWN, buff=0.1)
 
-        label_c1 = MathTex("c", font_size=20, color=YELLOW)
+        label_c1 = MathTex("c", font_size=t.small_size, color=t.accent)
         mid1 = (v3 + v0 + RIGHT * a) / 2
         label_c1.move_to(mid1 + LEFT * 0.2 + UP * 0.1)
 
-        label_c2 = MathTex("c", font_size=20, color=YELLOW)
+        label_c2 = MathTex("c", font_size=t.small_size, color=t.accent)
         mid2 = (v0 + RIGHT * a + v2) / 2
         label_c2.move_to(mid2 + RIGHT * 0.1 + DOWN * 0.1)
 
@@ -752,13 +755,13 @@ class PresidentialProof(Scene):
         # Area calculations
         area_trap = MathTex(
             r"\text{Trapezoid area} = \frac{1}{2}(a+b)(a+b) = \frac{(a+b)^2}{2}",
-            font_size=24,
+            font_size=t.label_size,
         )
         area_trap.to_edge(RIGHT).shift(UP * 1)
 
         area_tris = MathTex(
             r"\text{Triangle areas} = \frac{ab}{2} + \frac{ab}{2} + \frac{c^2}{2}",
-            font_size=24,
+            font_size=t.label_size,
         )
         area_tris.next_to(area_trap, DOWN, buff=0.5)
 
@@ -769,34 +772,36 @@ class PresidentialProof(Scene):
         # Equate
         equation = MathTex(
             r"\frac{(a+b)^2}{2} = ab + \frac{c^2}{2}",
-            font_size=28,
+            font_size=t.body_size,
         )
         equation.next_to(area_tris, DOWN, buff=0.5)
 
         step2 = MathTex(
             r"a^2 + 2ab + b^2 = 2ab + c^2",
-            font_size=28,
+            font_size=t.body_size,
         )
         step2.next_to(equation, DOWN, buff=0.3)
 
-        result = MathTex(r"a^2 + b^2 = c^2", font_size=36, color=YELLOW)
+        result = MathTex(r"a^2 + b^2 = c^2", font_size=t.subtitle_size, color=t.accent)
         result.next_to(step2, DOWN, buff=0.3)
 
         self.play(Write(equation))
         self.play(Write(step2))
         self.play(Write(result))
 
-        self.play(Circumscribe(result, color=YELLOW))
+        self.play(Circumscribe(result, color=t.accent))
         self.wait(2)
 
 
-class AnimatedProofSummary(Scene):
+class AnimatedProofSummary(ThemedScene):
     """
     Quick animated summary showing the theorem visually.
     """
 
     def construct(self):
-        title = Text("The Pythagorean Theorem", font_size=40)
+        t = self.theme
+
+        title = Text("The Pythagorean Theorem", font_size=t.title_size)
         self.play(Write(title))
         self.wait(1)
         self.play(title.animate.to_edge(UP))
@@ -810,19 +815,19 @@ class AnimatedProofSummary(Scene):
         B = A + RIGHT * a
         C = B + UP * b
 
-        triangle = Polygon(A, B, C, color=WHITE, stroke_width=3)
+        triangle = Polygon(A, B, C, color=t.foreground, stroke_width=t.curve_stroke_width)
         self.play(Create(triangle))
 
         # Squares on each side with animation
-        square_a = Square(side_length=a, color=GREEN, fill_color=GREEN, fill_opacity=0.6)
+        square_a = Square(side_length=a, color=t.tertiary, fill_color=t.tertiary, fill_opacity=0.6)
         square_a.next_to(Line(A, B), DOWN, buff=0)
 
-        square_b = Square(side_length=b, color=RED, fill_color=RED, fill_opacity=0.6)
+        square_b = Square(side_length=b, color=t.secondary, fill_color=t.secondary, fill_opacity=0.6)
         square_b.next_to(Line(B, C), RIGHT, buff=0)
 
         # c-square needs rotation
         angle = np.arctan2(C[1] - A[1], C[0] - A[0])
-        square_c = Square(side_length=c, color=YELLOW, fill_color=YELLOW, fill_opacity=0.6)
+        square_c = Square(side_length=c, color=t.accent, fill_color=t.accent, fill_opacity=0.6)
         square_c.rotate(angle)
         # Position perpendicular to hypotenuse
         hyp_mid = (A + C) / 2
@@ -836,13 +841,13 @@ class AnimatedProofSummary(Scene):
         self.play(FadeIn(square_c, scale=0.5))
 
         # Labels
-        a_label = MathTex(f"a^2 = {a**2:.1f}", font_size=24, color=WHITE)
+        a_label = MathTex(f"a^2 = {a**2:.1f}", font_size=t.label_size, color=t.foreground)
         a_label.move_to(square_a.get_center())
 
-        b_label = MathTex(f"b^2 = {b**2:.2f}", font_size=24, color=WHITE)
+        b_label = MathTex(f"b^2 = {b**2:.2f}", font_size=t.label_size, color=t.foreground)
         b_label.move_to(square_b.get_center())
 
-        c_label = MathTex(f"c^2 = {c**2:.2f}", font_size=24, color=WHITE)
+        c_label = MathTex(f"c^2 = {c**2:.2f}", font_size=t.label_size, color=t.foreground)
         c_label.move_to(square_c.get_center())
 
         self.play(Write(a_label), Write(b_label), Write(c_label))
@@ -850,11 +855,11 @@ class AnimatedProofSummary(Scene):
         # The equation
         equation = MathTex(
             f"{a**2:.1f} + {b**2:.2f} = {c**2:.2f}",
-            font_size=32,
+            font_size=t.subtitle_size,
         )
         equation.to_edge(DOWN).shift(UP * 0.5)
 
-        final = MathTex(r"a^2 + b^2 = c^2", font_size=48, color=YELLOW)
+        final = MathTex(r"a^2 + b^2 = c^2", font_size=t.title_size, color=t.accent)
         final.next_to(equation, DOWN, buff=0.3)
 
         self.play(Write(equation))

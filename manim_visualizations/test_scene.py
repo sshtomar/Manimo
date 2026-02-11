@@ -4,7 +4,6 @@ Uses only shapes and basic text to verify rendering pipeline.
 """
 
 from manim import (
-    Scene,
     VGroup,
     Square,
     Circle,
@@ -20,13 +19,6 @@ from manim import (
     Transform,
     Rotate,
     Indicate,
-    BLUE,
-    RED,
-    GREEN,
-    YELLOW,
-    ORANGE,
-    PURPLE,
-    WHITE,
     UP,
     DOWN,
     LEFT,
@@ -36,13 +28,17 @@ from manim import (
     np,
 )
 
+from themed_scene import ThemedScene
 
-class SimpleTransformTest(Scene):
+
+class SimpleTransformTest(ThemedScene):
     """Test linear transformation without LaTeX."""
 
     def construct(self):
+        t = self.theme
+
         # Title using plain Text (no LaTeX needed)
-        title = Text("Linear Transformation Demo", font_size=36)
+        title = Text("Linear Transformation Demo", font_size=t.subtitle_size)
         title.to_edge(UP)
         self.play(Create(title))
 
@@ -55,18 +51,18 @@ class SimpleTransformTest(Scene):
         self.play(Create(plane), run_time=1.5)
 
         # Basis vectors as arrows
-        i_hat = Arrow(ORIGIN, RIGHT * 2, buff=0, color=GREEN, stroke_width=5)
-        j_hat = Arrow(ORIGIN, UP * 2, buff=0, color=RED, stroke_width=5)
+        i_hat = Arrow(ORIGIN, RIGHT * 2, buff=0, color=t.tertiary, stroke_width=t.heavy_stroke_width)
+        j_hat = Arrow(ORIGIN, UP * 2, buff=0, color=t.secondary, stroke_width=t.heavy_stroke_width)
 
-        i_label = Text("i", font_size=28, color=GREEN).next_to(i_hat, DOWN)
-        j_label = Text("j", font_size=28, color=RED).next_to(j_hat, LEFT)
+        i_label = Text("i", font_size=t.body_size, color=t.tertiary).next_to(i_hat, DOWN)
+        j_label = Text("j", font_size=t.body_size, color=t.secondary).next_to(j_hat, LEFT)
 
         self.play(Create(i_hat), Create(j_hat))
         self.play(FadeIn(i_label), FadeIn(j_label))
         self.wait(0.5)
 
         # A unit square to show transformation
-        square = Square(side_length=2, color=YELLOW, fill_opacity=0.3)
+        square = Square(side_length=2, color=t.accent, fill_opacity=t.shape_fill_opacity)
         square.move_to(RIGHT + UP)
         self.play(FadeIn(square))
         self.wait(0.5)
@@ -83,17 +79,19 @@ class SimpleTransformTest(Scene):
         )
 
         # New label
-        result = Text("Shear Transform Applied!", font_size=28, color=YELLOW)
+        result = Text("Shear Transform Applied!", font_size=t.body_size, color=t.accent)
         result.to_edge(DOWN)
         self.play(FadeIn(result))
         self.wait(1)
 
 
-class PythagoreanShapesTest(Scene):
+class PythagoreanShapesTest(ThemedScene):
     """Test Pythagorean visualization with shapes only."""
 
     def construct(self):
-        title = Text("Pythagorean Theorem", font_size=40)
+        t = self.theme
+
+        title = Text("Pythagorean Theorem", font_size=t.title_size)
         self.play(Create(title))
         self.wait(0.5)
         self.play(title.animate.to_edge(UP))
@@ -109,43 +107,43 @@ class PythagoreanShapesTest(Scene):
 
         triangle = Polygon(
             A, B, C,
-            color=WHITE,
-            fill_color=BLUE,
-            fill_opacity=0.3,
-            stroke_width=3,
+            color=t.foreground,
+            fill_color=t.primary,
+            fill_opacity=t.shape_fill_opacity,
+            stroke_width=t.curve_stroke_width,
         )
         self.play(Create(triangle))
 
         # Right angle marker
-        right_marker = Square(side_length=0.25, color=WHITE)
+        right_marker = Square(side_length=0.25, color=t.foreground)
         right_marker.move_to(B + LEFT * 0.125 + UP * 0.125)
         self.play(Create(right_marker))
 
         # Square on side a (bottom)
-        square_a = Square(side_length=a, color=GREEN, fill_color=GREEN, fill_opacity=0.5)
+        square_a = Square(side_length=a, color=t.tertiary, fill_color=t.tertiary, fill_opacity=t.area_fill_opacity)
         square_a.next_to(Line(A, B), DOWN, buff=0)
-        label_a = Text("a²", font_size=24, color=WHITE)
+        label_a = Text("a²", font_size=t.label_size, color=t.foreground)
         label_a.move_to(square_a.get_center())
 
         self.play(FadeIn(square_a), FadeIn(label_a))
 
         # Square on side b (right)
-        square_b = Square(side_length=b, color=RED, fill_color=RED, fill_opacity=0.5)
+        square_b = Square(side_length=b, color=t.secondary, fill_color=t.secondary, fill_opacity=t.area_fill_opacity)
         square_b.next_to(Line(B, C), RIGHT, buff=0)
-        label_b = Text("b²", font_size=24, color=WHITE)
+        label_b = Text("b²", font_size=t.label_size, color=t.foreground)
         label_b.move_to(square_b.get_center())
 
         self.play(FadeIn(square_b), FadeIn(label_b))
 
         # Square on hypotenuse
         angle = np.arctan2(C[1] - A[1], C[0] - A[0])
-        square_c = Square(side_length=c, color=YELLOW, fill_color=YELLOW, fill_opacity=0.5)
+        square_c = Square(side_length=c, color=t.accent, fill_color=t.accent, fill_opacity=t.area_fill_opacity)
         square_c.rotate(angle)
         hyp_mid = (A + C) / 2
         perp = np.array([-(C[1] - A[1]), C[0] - A[0], 0])
         perp = perp / np.linalg.norm(perp)
         square_c.move_to(hyp_mid + perp * c / 2)
-        label_c = Text("c²", font_size=24, color=WHITE)
+        label_c = Text("c²", font_size=t.label_size, color=t.foreground)
         label_c.move_to(square_c.get_center())
 
         self.play(FadeIn(square_c), FadeIn(label_c))
@@ -156,23 +154,25 @@ class PythagoreanShapesTest(Scene):
         self.play(Indicate(square_c))
 
         # Result text
-        result = Text("a² + b² = c²", font_size=36, color=YELLOW)
+        result = Text("a² + b² = c²", font_size=t.subtitle_size, color=t.accent)
         result.to_edge(DOWN)
         self.play(FadeIn(result))
         self.wait(1)
 
 
-class DerivativeShapesTest(Scene):
+class DerivativeShapesTest(ThemedScene):
     """Test derivative visualization with shapes."""
 
     def construct(self):
-        title = Text("Tangent Line = Derivative", font_size=32)
+        t = self.theme
+
+        title = Text("Tangent Line = Derivative", font_size=t.body_size + 4)
         title.to_edge(UP)
         self.play(Create(title))
 
         # Create axes manually with lines
-        x_axis = Arrow(LEFT * 5, RIGHT * 5, buff=0, color=WHITE, stroke_width=2)
-        y_axis = Arrow(DOWN * 3, UP * 3, buff=0, color=WHITE, stroke_width=2)
+        x_axis = Arrow(LEFT * 5, RIGHT * 5, buff=0, color=t.foreground, stroke_width=t.axis_stroke_width)
+        y_axis = Arrow(DOWN * 3, UP * 3, buff=0, color=t.foreground, stroke_width=t.axis_stroke_width)
 
         self.play(Create(x_axis), Create(y_axis))
 
@@ -186,7 +186,7 @@ class DerivativeShapesTest(Scene):
         # Create curve from line segments
         curve_lines = VGroup()
         for i in range(len(points) - 1):
-            line = Line(points[i], points[i + 1], color=BLUE, stroke_width=3)
+            line = Line(points[i], points[i + 1], color=t.primary, stroke_width=t.curve_stroke_width)
             curve_lines.add(line)
 
         self.play(Create(curve_lines), run_time=2)
@@ -194,7 +194,7 @@ class DerivativeShapesTest(Scene):
         # Add a point on the curve
         x_point = 1.0
         y_point = x_point**2
-        point = Circle(radius=0.1, color=YELLOW, fill_opacity=1)
+        point = Circle(radius=0.1, color=t.accent, fill_opacity=1)
         point.move_to(np.array([x_point * 1.5, y_point * 0.5, 0]))
 
         self.play(FadeIn(point))
@@ -206,12 +206,12 @@ class DerivativeShapesTest(Scene):
 
         tangent_start = np.array([0, 0.5 - 1.5 * display_slope, 0])
         tangent_end = np.array([3, 0.5 + 1.5 * display_slope, 0])
-        tangent = Line(tangent_start, tangent_end, color=RED, stroke_width=3)
+        tangent = Line(tangent_start, tangent_end, color=t.secondary, stroke_width=t.curve_stroke_width)
 
         self.play(Create(tangent))
 
         # Label
-        slope_text = Text("Slope = 2 (derivative at x=1)", font_size=24, color=RED)
+        slope_text = Text("Slope = 2 (derivative at x=1)", font_size=t.label_size, color=t.secondary)
         slope_text.to_edge(DOWN)
         self.play(FadeIn(slope_text))
 

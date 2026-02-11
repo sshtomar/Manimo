@@ -22,42 +22,41 @@ Render:
 from manim import *
 import numpy as np
 
+from themed_scene import ThemedScene
 
-class PythagoreanProof(Scene):
-    # Consistent color palette (same entity = same color everywhere)
-    A_COLOR = BLUE       # side a
-    B_COLOR = YELLOW     # side b
-    C_COLOR = GREEN      # side c (hypotenuse)
-    TRI_COLOR = TEAL_E   # triangle fill
+
+class PythagoreanProof(ThemedScene):
 
     def construct(self):
+        t = self.theme
+
         # 3-4-5 triangle scaled to fit screen (a=1.2, b=1.6, c=2.0)
         a, b = 1.2, 1.6
         s = a + b   # 2.8 — side of the big square
         h = s / 2   # 1.4 — half-side for centering
 
-        self.hook()
-        self.show_triangle(a, b)
-        self.show_proof(a, b, s, h)
-        self.conclude()
+        self._hook(t)
+        self._show_triangle(t, a, b)
+        self._show_proof(t, a, b, s, h)
+        self._conclude(t)
 
     # ------------------------------------------------------------------
     # Scene 1: Setup — pose the question (≈8 s)
     # ------------------------------------------------------------------
-    def hook(self):
-        title = Text("The Pythagorean Theorem", font_size=44)
+    def _hook(self, t):
+        title = Text("The Pythagorean Theorem", font_size=t.title_size)
         self.play(Write(title), run_time=1.5)
         self.wait(1)
 
         eq = MathTex(r"a^2", r"+", r"b^2", r"=", r"c^2", font_size=56)
-        eq[0].set_color(self.A_COLOR)
-        eq[2].set_color(self.B_COLOR)
-        eq[4].set_color(self.C_COLOR)
+        eq[0].set_color(t.primary)
+        eq[2].set_color(t.accent)
+        eq[4].set_color(t.tertiary)
 
         self.play(FadeOut(title, shift=0.3 * UP), FadeIn(eq, shift=0.3 * UP))
         self.wait(1)
 
-        why = Text("Why?", font_size=40, color=GOLD)
+        why = Text("Why?", font_size=40, color=t.accent2)
         why.next_to(eq, DOWN, buff=0.5)
         self.play(FadeIn(why))
         self.wait(1.5)  # let curiosity build
@@ -67,11 +66,11 @@ class PythagoreanProof(Scene):
     # ------------------------------------------------------------------
     # Scene 2: Foundation — introduce the right triangle (≈8 s)
     # ------------------------------------------------------------------
-    def show_triangle(self, a, b):
+    def _show_triangle(self, t, a, b):
         tri = Polygon(
             ORIGIN, b * RIGHT, b * RIGHT + a * UP,
-            stroke_color=WHITE, stroke_width=2,
-            fill_color=self.TRI_COLOR, fill_opacity=0.4,
+            stroke_color=t.foreground, stroke_width=t.axis_stroke_width,
+            fill_color=t.primary, fill_opacity=0.4,
         )
         tri.move_to(ORIGIN)
         verts = tri.get_vertices()
@@ -79,17 +78,17 @@ class PythagoreanProof(Scene):
         # Right-angle marker at vertex 1
         sz = 0.15
         v = verts[1]
-        ra = VMobject(stroke_width=1.5, color=WHITE)
+        ra = VMobject(stroke_width=1.5, color=t.foreground)
         ra.set_points_as_corners([v + sz * UP, v + sz * (UP + LEFT), v + sz * LEFT])
 
         # Side labels (geometry before symbols)
-        a_lab = MathTex("a", color=self.A_COLOR, font_size=32)
+        a_lab = MathTex("a", color=t.primary, font_size=32)
         a_lab.next_to((verts[1] + verts[2]) / 2, RIGHT, buff=0.15)
 
-        b_lab = MathTex("b", color=self.B_COLOR, font_size=32)
+        b_lab = MathTex("b", color=t.accent, font_size=32)
         b_lab.next_to((verts[0] + verts[1]) / 2, DOWN, buff=0.15)
 
-        c_lab = MathTex("c", color=self.C_COLOR, font_size=32)
+        c_lab = MathTex("c", color=t.tertiary, font_size=32)
         c_lab.next_to((verts[0] + verts[2]) / 2, UL, buff=0.15)
 
         self.play(Create(tri), run_time=1.5)
@@ -104,13 +103,13 @@ class PythagoreanProof(Scene):
     # ------------------------------------------------------------------
     # Scene 3-4: Build — two arrangements side-by-side (≈20 s)
     # ------------------------------------------------------------------
-    def show_proof(self, a, b, s, h):
+    def _show_proof(self, t, a, b, s, h):
         left_x = -3.2
         right_x = 3.2
         vert_shift = 1.0 * UP  # shift diagrams up to leave room for equations
 
         # ---- LEFT: Arrangement 1 — tilted c² square in center --------
-        o1 = Square(side_length=s, stroke_color=WHITE, stroke_width=2)
+        o1 = Square(side_length=s, stroke_color=t.foreground, stroke_width=t.axis_stroke_width)
         o1.shift(left_x * RIGHT + vert_shift)
 
         t1_polys = VGroup(
@@ -119,28 +118,28 @@ class PythagoreanProof(Scene):
             Polygon([h, -h + b, 0], [h, h, 0], [h - b, h, 0]),
             Polygon([h - b, h, 0], [-h, h, 0], [-h, -h + a, 0]),
         )
-        for t in t1_polys:
-            t.set_stroke(WHITE, 1.5).set_fill(self.TRI_COLOR, 0.5)
+        for tri in t1_polys:
+            tri.set_stroke(t.foreground, 1.5).set_fill(t.primary, 0.5)
         t1_polys.shift(left_x * RIGHT + vert_shift)
 
         inner = Polygon(
             [-h, -h + a, 0], [-h + b, -h, 0], [h, -h + b, 0], [h - b, h, 0],
-            stroke_color=self.C_COLOR, stroke_width=2.5,
-            fill_color=self.C_COLOR, fill_opacity=0.25,
+            stroke_color=t.tertiary, stroke_width=2.5,
+            fill_color=t.tertiary, fill_opacity=0.25,
         )
         inner.shift(left_x * RIGHT + vert_shift)
 
-        c_lab = MathTex(r"c^2", color=self.C_COLOR, font_size=28)
+        c_lab = MathTex(r"c^2", color=t.tertiary, font_size=t.body_size)
         c_lab.move_to(inner.get_center())
 
-        head1 = Text("Arrangement 1", font_size=22, color=GREY_B)
+        head1 = Text("Arrangement 1", font_size=22, color=t.muted)
         head1.next_to(o1, UP, buff=0.25)
 
         # ---- RIGHT: Arrangement 2 — a² and b² squares ----------------
         mx = -h + b   # vertical divider x
         my = -h + a   # horizontal divider y
 
-        o2 = Square(side_length=s, stroke_color=WHITE, stroke_width=2)
+        o2 = Square(side_length=s, stroke_color=t.foreground, stroke_width=t.axis_stroke_width)
         o2.shift(right_x * RIGHT + vert_shift)
 
         t2_polys = VGroup(
@@ -149,37 +148,37 @@ class PythagoreanProof(Scene):
             Polygon([mx, my, 0], [h, my, 0], [h, h, 0]),
             Polygon([mx, my, 0], [h, h, 0], [mx, h, 0]),
         )
-        for t in t2_polys:
-            t.set_stroke(WHITE, 1.5).set_fill(self.TRI_COLOR, 0.5)
+        for tri in t2_polys:
+            tri.set_stroke(t.foreground, 1.5).set_fill(t.primary, 0.5)
         t2_polys.shift(right_x * RIGHT + vert_shift)
 
         sq_a = Polygon(
             [mx, -h, 0], [h, -h, 0], [h, my, 0], [mx, my, 0],
-            stroke_color=self.A_COLOR, stroke_width=2.5,
-            fill_color=self.A_COLOR, fill_opacity=0.25,
+            stroke_color=t.primary, stroke_width=2.5,
+            fill_color=t.primary, fill_opacity=0.25,
         )
         sq_a.shift(right_x * RIGHT + vert_shift)
 
         sq_b = Polygon(
             [-h, my, 0], [mx, my, 0], [mx, h, 0], [-h, h, 0],
-            stroke_color=self.B_COLOR, stroke_width=2.5,
-            fill_color=self.B_COLOR, fill_opacity=0.25,
+            stroke_color=t.accent, stroke_width=2.5,
+            fill_color=t.accent, fill_opacity=0.25,
         )
         sq_b.shift(right_x * RIGHT + vert_shift)
 
-        a_lab = MathTex(r"a^2", color=self.A_COLOR, font_size=24)
+        a_lab = MathTex(r"a^2", color=t.primary, font_size=t.label_size)
         a_lab.move_to(sq_a.get_center())
 
-        b_lab = MathTex(r"b^2", color=self.B_COLOR, font_size=24)
+        b_lab = MathTex(r"b^2", color=t.accent, font_size=t.label_size)
         b_lab.move_to(sq_b.get_center())
 
-        head2 = Text("Arrangement 2", font_size=22, color=GREY_B)
+        head2 = Text("Arrangement 2", font_size=22, color=t.muted)
         head2.next_to(o2, UP, buff=0.25)
 
         # ---- Animate left arrangement ----
         self.play(Create(o1), FadeIn(head1), run_time=1)
         self.play(
-            LaggedStart(*[Create(t) for t in t1_polys], lag_ratio=0.15),
+            LaggedStart(*[Create(tri) for tri in t1_polys], lag_ratio=0.15),
             run_time=1.5,
         )
         self.play(Create(inner), run_time=1)
@@ -187,13 +186,13 @@ class PythagoreanProof(Scene):
 
         # ---- Prove the inner shape is a square with side c ----
         self._prove_inner_is_c_squared(
-            inner, t1_polys, c_lab, o1, a, b, h, left_x, vert_shift,
+            t, inner, t1_polys, c_lab, o1, a, b, h, left_x, vert_shift,
         )
 
         # ---- Animate right arrangement ----
         self.play(Create(o2), FadeIn(head2), run_time=1)
         self.play(
-            LaggedStart(*[Create(t) for t in t2_polys], lag_ratio=0.15),
+            LaggedStart(*[Create(tri) for tri in t2_polys], lag_ratio=0.15),
             run_time=1.5,
         )
         self.play(Create(sq_a), Create(sq_b), run_time=1)
@@ -207,13 +206,13 @@ class PythagoreanProof(Scene):
             r"\text{Total area}", r"=", r"(a+b)^2",
             font_size=30,
         )
-        step1[2][1].set_color(self.A_COLOR)   # a
-        step1[2][3].set_color(self.B_COLOR)   # b
+        step1[2][1].set_color(t.primary)   # a
+        step1[2][3].set_color(t.accent)    # b
         step1.next_to(VGroup(o1, o2), DOWN, buff=0.35)
 
         self.play(
-            Indicate(o1, color=WHITE, scale_factor=1.02),
-            Indicate(o2, color=WHITE, scale_factor=1.02),
+            Indicate(o1, color=t.foreground, scale_factor=1.02),
+            Indicate(o2, color=t.foreground, scale_factor=1.02),
             run_time=1,
         )
         self.play(Write(step1), run_time=1.2)
@@ -225,14 +224,14 @@ class PythagoreanProof(Scene):
             r"4 \cdot \tfrac{1}{2}", r"a", r"b",
             font_size=30,
         )
-        step2[3].set_color(self.A_COLOR)
-        step2[4].set_color(self.B_COLOR)
+        step2[3].set_color(t.primary)
+        step2[4].set_color(t.accent)
         step2.next_to(step1, DOWN, buff=0.25)
 
         # Flash all 8 triangles simultaneously to show they match
         self.play(
-            *[Indicate(t, color=TEAL, scale_factor=1.03) for t in t1_polys],
-            *[Indicate(t, color=TEAL, scale_factor=1.03) for t in t2_polys],
+            *[Indicate(tri, color=t.primary, scale_factor=1.03) for tri in t1_polys],
+            *[Indicate(tri, color=t.primary, scale_factor=1.03) for tri in t2_polys],
             run_time=1,
         )
         self.play(Write(step2), run_time=1.2)
@@ -244,10 +243,10 @@ class PythagoreanProof(Scene):
             r"(a+b)^2", r"-", r"4 \cdot \tfrac{1}{2}", r"a", r"b",
             font_size=30,
         )
-        step3[2][1].set_color(self.A_COLOR)
-        step3[2][3].set_color(self.B_COLOR)
-        step3[5].set_color(self.A_COLOR)
-        step3[6].set_color(self.B_COLOR)
+        step3[2][1].set_color(t.primary)
+        step3[2][3].set_color(t.accent)
+        step3[5].set_color(t.primary)
+        step3[6].set_color(t.accent)
         step3.next_to(step2, DOWN, buff=0.25)
 
         self.play(Write(step3), run_time=1.2)
@@ -260,21 +259,21 @@ class PythagoreanProof(Scene):
             r"\underbrace{a^2 + b^2}_{\text{Arr. 2}}",
             font_size=34,
         )
-        step4[0][0:2].set_color(self.C_COLOR)    # c²
-        step4[2][0:2].set_color(self.A_COLOR)     # a²
-        step4[2][3:5].set_color(self.B_COLOR)     # b²
+        step4[0][0:2].set_color(t.tertiary)    # c²
+        step4[2][0:2].set_color(t.primary)      # a²
+        step4[2][3:5].set_color(t.accent)       # b²
         step4.next_to(step3, DOWN, buff=0.3)
 
         # Pulse each arrangement's leftover as its side of the equation appears
         self.play(
-            Indicate(inner, color=self.C_COLOR, scale_factor=1.05),
+            Indicate(inner, color=t.tertiary, scale_factor=1.05),
             FadeIn(step4[0]),
             run_time=1.2,
         )
         self.play(FadeIn(step4[1]), run_time=0.4)
         self.play(
-            Indicate(sq_a, color=self.A_COLOR, scale_factor=1.05),
-            Indicate(sq_b, color=self.B_COLOR, scale_factor=1.05),
+            Indicate(sq_a, color=t.primary, scale_factor=1.05),
+            Indicate(sq_b, color=t.accent, scale_factor=1.05),
             FadeIn(step4[2]),
             run_time=1.2,
         )
@@ -289,29 +288,27 @@ class PythagoreanProof(Scene):
     # ------------------------------------------------------------------
     # Helper: Prove the inner tilted shape is a square with side c
     # ------------------------------------------------------------------
-    def _prove_inner_is_c_squared(self, inner, t1_polys, c_lab, o1, a, b, h, left_x, vert_shift):
-        c = np.sqrt(a**2 + b**2)
+    def _prove_inner_is_c_squared(self, t, inner, t1_polys, c_lab, o1, a, b, h, left_x, vert_shift):
         offset = np.array([left_x, 0, 0]) + vert_shift
 
         # --- Step A: Each side is the hypotenuse of a right triangle → length c ---
-        # Highlight one triangle's hypotenuse to show it's a side of the inner shape
         tri0 = t1_polys[0]
         hyp_line = Line(
             np.array([-h, -h + a, 0]) + offset,
             np.array([-h + b, -h, 0]) + offset,
-            color=self.C_COLOR, stroke_width=4,
+            color=t.tertiary, stroke_width=4,
         )
-        c_side_label = MathTex("c", color=self.C_COLOR, font_size=26)
+        c_side_label = MathTex("c", color=t.tertiary, font_size=26)
         c_side_label.next_to(hyp_line.get_center(), DR, buff=0.1)
 
         side_note = MathTex(
             r"\text{Each side} = c \text{ (hypotenuse)}",
-            font_size=24, color=self.C_COLOR,
+            font_size=t.label_size, color=t.tertiary,
         )
         side_note.next_to(o1, DOWN, buff=0.25)
 
         self.play(
-            Indicate(tri0, color=TEAL, scale_factor=1.03),
+            Indicate(tri0, color=t.primary, scale_factor=1.03),
             Create(hyp_line),
             run_time=1,
         )
@@ -320,17 +317,15 @@ class PythagoreanProof(Scene):
         self.wait(1)
 
         # --- Step B: Each interior angle = 90° ---
-        # Label the two acute angles α and β on the highlighted triangle
-        # Triangle 0 vertices: (-h,-h), (-h+b,-h), (-h,-h+a) shifted by offset
-        v0 = np.array([-h, -h, 0]) + offset       # unused vertex (corner of big square)
-        v1 = np.array([-h + b, -h, 0]) + offset    # bottom-right of triangle
-        v2 = np.array([-h, -h + a, 0]) + offset    # top-left of triangle
+        v0 = np.array([-h, -h, 0]) + offset
+        v1 = np.array([-h + b, -h, 0]) + offset
+        v2 = np.array([-h, -h + a, 0]) + offset
 
-        alpha_label = MathTex(r"\alpha", font_size=20, color=ORANGE)
-        alpha_label.move_to(v2 + np.array([0.25, -0.2, 0]))  # near the top vertex
+        alpha_label = MathTex(r"\alpha", font_size=t.small_size, color=t.accent2)
+        alpha_label.move_to(v2 + np.array([0.25, -0.2, 0]))
 
-        beta_label = MathTex(r"\beta", font_size=20, color=RED_B)
-        beta_label.move_to(v1 + np.array([-0.2, 0.25, 0]))  # near the bottom-right vertex
+        beta_label = MathTex(r"\beta", font_size=t.small_size, color=t.secondary)
+        beta_label.move_to(v1 + np.array([-0.2, 0.25, 0]))
 
         self.play(Write(alpha_label), Write(beta_label), run_time=0.8)
         self.wait(0.5)
@@ -338,10 +333,10 @@ class PythagoreanProof(Scene):
         # Show α + β = 90° (since the triangle has a right angle)
         angle_eq1 = MathTex(
             r"\alpha", r"+", r"\beta", r"= 90^\circ",
-            font_size=24,
+            font_size=t.label_size,
         )
-        angle_eq1[0].set_color(ORANGE)
-        angle_eq1[2].set_color(RED_B)
+        angle_eq1[0].set_color(t.accent2)
+        angle_eq1[2].set_color(t.secondary)
         angle_eq1.next_to(side_note, DOWN, buff=0.2)
 
         self.play(Write(angle_eq1), run_time=1)
@@ -352,10 +347,10 @@ class PythagoreanProof(Scene):
             r"\text{Inner angle}", r"=",
             r"180^\circ", r"-", r"\alpha", r"-", r"\beta",
             r"= 90^\circ",
-            font_size=24,
+            font_size=t.label_size,
         )
-        angle_eq2[4].set_color(ORANGE)
-        angle_eq2[6].set_color(RED_B)
+        angle_eq2[4].set_color(t.accent2)
+        angle_eq2[6].set_color(t.secondary)
         angle_eq2.next_to(angle_eq1, DOWN, buff=0.2)
 
         self.play(Write(angle_eq2), run_time=1.2)
@@ -364,12 +359,12 @@ class PythagoreanProof(Scene):
         # --- Step C: Conclude → it's a square with area c² ---
         conclusion = MathTex(
             r"\Rightarrow", r"\text{square with area } c^2",
-            font_size=26, color=self.C_COLOR,
+            font_size=26, color=t.tertiary,
         )
         conclusion.next_to(angle_eq2, DOWN, buff=0.2)
 
         self.play(
-            Indicate(inner, color=self.C_COLOR, scale_factor=1.05),
+            Indicate(inner, color=t.tertiary, scale_factor=1.05),
             Write(conclusion),
             run_time=1.2,
         )
@@ -387,15 +382,15 @@ class PythagoreanProof(Scene):
     # ------------------------------------------------------------------
     # Scene 5: Resolution — final statement (≈5 s)
     # ------------------------------------------------------------------
-    def conclude(self):
+    def _conclude(self, t):
         self.play(FadeOut(self.proof_objects), run_time=1)
 
         final = MathTex(r"a^2", r"+", r"b^2", r"=", r"c^2", font_size=72)
-        final[0].set_color(self.A_COLOR)
-        final[2].set_color(self.B_COLOR)
-        final[4].set_color(self.C_COLOR)
+        final[0].set_color(t.primary)
+        final[2].set_color(t.accent)
+        final[4].set_color(t.tertiary)
 
-        box = SurroundingRectangle(final, color=GOLD, buff=0.3, stroke_width=2)
+        box = SurroundingRectangle(final, color=t.accent2, buff=0.3, stroke_width=t.axis_stroke_width)
 
         self.play(Write(final), run_time=1.5)
         self.play(Create(box), run_time=0.8)

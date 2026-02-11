@@ -5,7 +5,6 @@ No LaTeX dependency - uses Text instead of MathTex.
 """
 
 from manim import (
-    Scene,
     VGroup,
     Axes,
     Text,
@@ -17,33 +16,26 @@ from manim import (
     FadeOut,
     ValueTracker,
     always_redraw,
-    BLUE,
-    RED,
-    YELLOW,
-    WHITE,
     UP,
     DOWN,
     LEFT,
     RIGHT,
-    config,
     linear,
 )
 
-# Colors
-FUNC_COLOR = BLUE
-TANGENT_COLOR = "#F59E0B"  # Amber to match the UI
-POINT_COLOR = "#F59E0B"
+from themed_scene import ThemedScene
 
 
-class DerivativeDemo(Scene):
+class DerivativeDemo(ThemedScene):
     """
     Clean, focused animation showing the derivative of x².
     Designed for the landing page hero section.
     """
 
+    theme_name = "dark_slate"
+
     def construct(self):
-        # Dark background matching the landing page
-        self.camera.background_color = "#0f172a"  # slate-900
+        t = self.theme
 
         # Create axes (no numbers to avoid LaTeX)
         axes = Axes(
@@ -54,15 +46,16 @@ class DerivativeDemo(Scene):
             axis_config={
                 "include_tip": True,
                 "include_numbers": False,
-                "color": "#475569",  # slate-600
+                "color": t.muted,
             },
         )
         axes.shift(DOWN * 0.3)
 
         # Axis labels using Text
-        x_label = Text("x", font_size=24, color="#94a3b8")
+        label_color = t.extras.get("label_color", t.muted)
+        x_label = Text("x", font_size=t.label_size, color=label_color)
         x_label.next_to(axes.x_axis.get_end(), RIGHT, buff=0.2)
-        y_label = Text("y", font_size=24, color="#94a3b8")
+        y_label = Text("y", font_size=t.label_size, color=label_color)
         y_label.next_to(axes.y_axis.get_end(), UP, buff=0.2)
 
         # Function and derivative
@@ -73,16 +66,16 @@ class DerivativeDemo(Scene):
         graph = axes.plot(
             func,
             x_range=[-2.2, 2.2],
-            color=FUNC_COLOR,
-            stroke_width=3,
+            color=t.primary,
+            stroke_width=t.curve_stroke_width,
         )
 
         # Function label
-        func_label = Text("f(x) = x²", font_size=28, color=FUNC_COLOR)
+        func_label = Text("f(x) = x²", font_size=t.body_size, color=t.primary)
         func_label.to_corner(UP + RIGHT).shift(DOWN * 0.5 + LEFT * 0.5)
 
         # Derivative label (will appear later)
-        deriv_label = Text("f'(x) = 2x", font_size=28, color=TANGENT_COLOR)
+        deriv_label = Text("f'(x) = 2x", font_size=t.body_size, color=t.accent)
         deriv_label.next_to(func_label, DOWN, aligned_edge=LEFT, buff=0.3)
 
         # Animate axes and graph
@@ -97,7 +90,7 @@ class DerivativeDemo(Scene):
         # Point on curve
         point = always_redraw(lambda: Dot(
             axes.c2p(x_tracker.get_value(), func(x_tracker.get_value())),
-            color=POINT_COLOR,
+            color=t.accent,
             radius=0.12,
         ))
 
@@ -109,7 +102,7 @@ class DerivativeDemo(Scene):
             x_range = 1.2
             start = axes.c2p(x - x_range, y - slope * x_range)
             end = axes.c2p(x + x_range, y + slope * x_range)
-            return Line(start, end, color=TANGENT_COLOR, stroke_width=3)
+            return Line(start, end, color=t.accent, stroke_width=t.curve_stroke_width)
 
         tangent = always_redraw(get_tangent_line)
 
@@ -118,8 +111,8 @@ class DerivativeDemo(Scene):
             x_val = x_tracker.get_value()
             slope_val = derivative(x_val)
 
-            x_text = Text(f"x = {x_val:.1f}", font_size=24, color="#e2e8f0")
-            slope_text = Text(f"slope = {slope_val:.1f}", font_size=24, color=TANGENT_COLOR)
+            x_text = Text(f"x = {x_val:.1f}", font_size=t.label_size, color=t.foreground)
+            slope_text = Text(f"slope = {slope_val:.1f}", font_size=t.label_size, color=t.accent)
 
             group = VGroup(x_text, slope_text)
             group.arrange(DOWN, aligned_edge=LEFT, buff=0.15)

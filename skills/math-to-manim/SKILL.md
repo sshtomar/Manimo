@@ -171,11 +171,13 @@ quantum tunneling (depth 0)
   <purpose>Generate working Manim Community Edition Python code</purpose>
   <requirements>
     - Use Manim Community Edition (manim, not manimlib)
-    - Import: from manim import *
-    - Scene class (or ThreeDScene for 3D content)
+    - Import: from manim import *; from themed_scene import ThemedScene
+    - Inherit from ThemedScene (or ThemedMixin + ThreeDScene for 3D content)
+    - Use self.theme for all colors and sizes (see color_palette_guidelines)
     - Raw strings for LaTeX: r"$\\frac{a}{b}$"
-    - All visual elements, colors, animations from prompt
+    - All visual elements, animations from prompt
     - Runnable with: manim -pql file.py SceneName
+    - Runnable with any theme: MANIMO_THEME=light manim -pql file.py SceneName
   </requirements>
   <temperature>0.3</temperature>
   <max_tokens>8000</max_tokens>
@@ -185,16 +187,26 @@ quantum tunneling (depth 0)
 
 <color_palette_guidelines>
 
-| Element Type | Recommended Color |
-|--------------|-------------------|
-| Primary equations | BLUE |
-| Secondary equations | YELLOW |
-| Axes/grids | WHITE or GREY |
-| Graphs/curves | YELLOW, GREEN |
-| Labels | GREEN |
-| Highlights | GOLD or ORANGE |
-| Warnings/errors | RED |
-| Success/completion | GREEN |
+Use the centralized theme system (`from themed_scene import ThemedScene`) for all colors.
+Scenes should inherit from `ThemedScene` and use `self.theme` for semantic color roles:
+
+| Element Type | Theme Role | Classic Default |
+|--------------|------------|-----------------|
+| Main function/entity | `self.theme.primary` | BLUE (#58C4DD) |
+| Derivative/contrast | `self.theme.secondary` | RED (#FC6255) |
+| Integral/third concept | `self.theme.tertiary` | GREEN (#83C167) |
+| Highlights/emphasis | `self.theme.accent` | YELLOW (#FFFF00) |
+| Alternative accent | `self.theme.accent2` | ORANGE (#FF862F) |
+| Axes/text/strokes | `self.theme.foreground` | WHITE (#FFFFFF) |
+| Grid lines/subtle text | `self.theme.muted` | GREY (#888888) |
+| Scene background | `self.theme.background` | BLACK (#000000) |
+
+Font sizes: `self.theme.title_size` (44), `subtitle_size` (36), `body_size` (28), `label_size` (24), `small_size` (20)
+Stroke widths: `self.theme.curve_stroke_width` (3), `axis_stroke_width` (2), `heavy_stroke_width` (5), `fine_stroke_width` (1)
+Fill opacities: `self.theme.shape_fill_opacity` (0.3), `area_fill_opacity` (0.5), `subtle_fill_opacity` (0.15)
+
+Available themes: classic, dark_slate, light, warm
+Select via: `theme_name = "dark_slate"` class variable, or `MANIMO_THEME=light` env var.
 
 </color_palette_guidelines>
 

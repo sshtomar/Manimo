@@ -13,7 +13,6 @@ No LaTeX dependency - uses Text instead of MathTex for compatibility.
 """
 
 from manim import (
-    Scene,
     VGroup,
     Axes,
     NumberPlane,
@@ -37,19 +36,6 @@ from manim import (
     always_redraw,
     SurroundingRectangle,
     TracedPath,
-    BLUE,
-    BLUE_D,
-    RED,
-    GREEN,
-    GREEN_D,
-    YELLOW,
-    ORANGE,
-    PURPLE,
-    TEAL,
-    PINK,
-    WHITE,
-    GREY,
-    GREY_B,
     UP,
     DOWN,
     LEFT,
@@ -65,33 +51,24 @@ from manim import (
     smooth,
 )
 
-# =============================================================================
-# CONSISTENT COLOR PALETTE
-# =============================================================================
-WAVE_COLOR = BLUE
-WAVE2_COLOR = RED
-SUM_COLOR = GREEN
-AMPLITUDE_COLOR = YELLOW
-VECTOR_COLOR = TEAL
-COMPLEX_COLOR = ORANGE
-REAL_COLOR = BLUE
-IMAG_COLOR = GREEN
-HIGHLIGHT_COLOR = YELLOW
+from themed_scene import ThemedScene
 
 
-class SineWaveGeneration(Scene):
+class SineWaveGeneration(ThemedScene):
     """
     Show how sine wave is generated from circular motion.
     The projection of a point on a circle traces out the familiar sine curve.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create the circle and axes
         # =====================================================================
 
         # Left side: Unit circle
-        circle = Circle(radius=1.5, color=GREY_B)
+        circle = Circle(radius=1.5, color=t.muted)
         circle.shift(LEFT * 3.5)
         circle_center = circle.get_center()
 
@@ -106,7 +83,7 @@ class SineWaveGeneration(Scene):
         axes.shift(RIGHT * 1.5)
 
         # Title
-        title = Text("Sine Wave from Circular Motion", font_size=32)
+        title = Text("Sine Wave from Circular Motion", font_size=t.subtitle_size)
         title.to_edge(UP)
 
         self.play(Create(circle), Create(axes), Write(title), run_time=1.5)
@@ -125,7 +102,7 @@ class SineWaveGeneration(Scene):
                 np.sin(theta.get_value()),
                 0
             ]),
-            color=WAVE_COLOR,
+            color=t.primary,
             radius=0.1
         ))
 
@@ -137,8 +114,8 @@ class SineWaveGeneration(Scene):
                 np.sin(theta.get_value()),
                 0
             ]),
-            color=WAVE_COLOR,
-            stroke_width=3
+            color=t.primary,
+            stroke_width=t.curve_stroke_width
         ))
 
         # Horizontal dashed line showing projection
@@ -149,15 +126,15 @@ class SineWaveGeneration(Scene):
                 0
             ]),
             axes.c2p(theta.get_value(), np.sin(theta.get_value())),
-            color=AMPLITUDE_COLOR,
-            stroke_width=2,
+            color=t.accent,
+            stroke_width=t.axis_stroke_width,
             dash_length=0.1
         ))
 
         # Point on the sine curve
         trace_dot = always_redraw(lambda: Dot(
             axes.c2p(theta.get_value(), np.sin(theta.get_value())),
-            color=WAVE_COLOR,
+            color=t.primary,
             radius=0.08
         ))
 
@@ -173,8 +150,8 @@ class SineWaveGeneration(Scene):
         # Use TracedPath for smooth tracing
         trace = TracedPath(
             trace_dot.get_center,
-            stroke_color=WAVE_COLOR,
-            stroke_width=3,
+            stroke_color=t.primary,
+            stroke_width=t.curve_stroke_width,
             dissipating_time=None
         )
         self.add(trace)
@@ -197,20 +174,22 @@ class SineWaveGeneration(Scene):
         # PHASE 4: EXPLAIN - Add the formula
         # =====================================================================
 
-        formula = Text("y = sin(theta)", font_size=32, color=WAVE_COLOR)
+        formula = Text("y = sin(theta)", font_size=t.subtitle_size, color=t.primary)
         formula.to_corner(UR)
 
         self.play(Write(formula))
         self.wait(2)
 
 
-class WaveInterference(Scene):
+class WaveInterference(ThemedScene):
     """
     Two waves combining - constructive and destructive interference.
     Shows superposition principle visually.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create three sets of axes stacked vertically
         # =====================================================================
@@ -245,9 +224,9 @@ class WaveInterference(Scene):
         axes3.shift(DOWN * 2.4)
 
         # Labels
-        label1 = Text("Wave 1", font_size=24, color=WAVE_COLOR).next_to(axes1, LEFT)
-        label2 = Text("Wave 2", font_size=24, color=WAVE2_COLOR).next_to(axes2, LEFT)
-        label3 = Text("Sum", font_size=24, color=SUM_COLOR).next_to(axes3, LEFT)
+        label1 = Text("Wave 1", font_size=t.label_size, color=t.primary).next_to(axes1, LEFT)
+        label2 = Text("Wave 2", font_size=t.label_size, color=t.secondary).next_to(axes2, LEFT)
+        label3 = Text("Sum", font_size=t.label_size, color=t.tertiary).next_to(axes3, LEFT)
 
         self.play(
             LaggedStart(
@@ -267,8 +246,8 @@ class WaveInterference(Scene):
 
         wave1 = axes1.plot(
             lambda x: np.sin(x),
-            color=WAVE_COLOR,
-            stroke_width=3
+            color=t.primary,
+            stroke_width=t.curve_stroke_width
         )
 
         self.play(Create(wave1), run_time=2)
@@ -282,14 +261,14 @@ class WaveInterference(Scene):
 
         wave2 = always_redraw(lambda: axes2.plot(
             lambda x: np.sin(x + phase.get_value()),
-            color=WAVE2_COLOR,
-            stroke_width=3
+            color=t.secondary,
+            stroke_width=t.curve_stroke_width
         ))
 
         sum_wave = always_redraw(lambda: axes3.plot(
             lambda x: np.sin(x) + np.sin(x + phase.get_value()),
-            color=SUM_COLOR,
-            stroke_width=3
+            color=t.tertiary,
+            stroke_width=t.curve_stroke_width
         ))
 
         self.play(Create(wave2))
@@ -302,13 +281,13 @@ class WaveInterference(Scene):
 
         phase_label = always_redraw(lambda: Text(
             f"phase = {phase.get_value() / PI:.1f} pi",
-            font_size=28
+            font_size=t.body_size
         ).to_corner(UR))
 
         self.play(FadeIn(phase_label))
 
         # Constructive interference
-        constructive_text = Text("Constructive Interference", font_size=28, color=SUM_COLOR)
+        constructive_text = Text("Constructive Interference", font_size=t.body_size, color=t.tertiary)
         constructive_text.to_edge(DOWN)
         self.play(Write(constructive_text))
         self.wait(1)
@@ -317,7 +296,7 @@ class WaveInterference(Scene):
         self.play(FadeOut(constructive_text))
         self.play(phase.animate.set_value(PI), run_time=3, rate_func=smooth)
 
-        destructive_text = Text("Destructive Interference", font_size=28, color=GREY)
+        destructive_text = Text("Destructive Interference", font_size=t.body_size, color=t.muted)
         destructive_text.to_edge(DOWN)
         self.play(Write(destructive_text))
         self.wait(1)
@@ -328,13 +307,15 @@ class WaveInterference(Scene):
         self.wait(1)
 
 
-class VectorFieldVisualization(Scene):
+class VectorFieldVisualization(ThemedScene):
     """
     Visualize a 2D vector field with animated arrows.
     Shows how vectors vary across space - rotational field.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create coordinate plane
         # =====================================================================
@@ -343,8 +324,8 @@ class VectorFieldVisualization(Scene):
             x_range=[-4, 4, 1],
             y_range=[-3, 3, 1],
             background_line_style={
-                "stroke_color": GREY_B,
-                "stroke_width": 1,
+                "stroke_color": t.muted,
+                "stroke_width": t.fine_stroke_width,
                 "stroke_opacity": 0.5,
             }
         )
@@ -356,7 +337,7 @@ class VectorFieldVisualization(Scene):
         # PHASE 2: BUILD - Create vector field arrows
         # =====================================================================
 
-        title = Text("Rotational Vector Field", font_size=32)
+        title = Text("Rotational Vector Field", font_size=t.subtitle_size)
         title.to_edge(UP)
         self.play(Write(title))
 
@@ -381,11 +362,11 @@ class VectorFieldVisualization(Scene):
                     arrow = Line(
                         start,
                         start + norm_dir,
-                        color=VECTOR_COLOR,
-                        stroke_width=3
+                        color=t.primary,
+                        stroke_width=t.curve_stroke_width
                     )
                     # Add a small dot at the tip
-                    tip = Dot(start + norm_dir, radius=0.05, color=VECTOR_COLOR)
+                    tip = Dot(start + norm_dir, radius=0.05, color=t.primary)
                     arrows.add(VGroup(arrow, tip))
 
         self.play(
@@ -398,7 +379,7 @@ class VectorFieldVisualization(Scene):
         # PHASE 3: DEMONSTRATE - Show a particle following the flow
         # =====================================================================
 
-        explain = Text("Particles follow the field", font_size=24, color=YELLOW)
+        explain = Text("Particles follow the field", font_size=t.label_size, color=t.accent)
         explain.to_edge(DOWN)
         self.play(Write(explain))
 
@@ -411,15 +392,15 @@ class VectorFieldVisualization(Scene):
                 2 * np.sin(t_tracker.get_value()),
                 0
             ]),
-            color=YELLOW,
+            color=t.accent,
             radius=0.15
         ))
 
         # Create traced path for particle trail
         path_trace = TracedPath(
             particle.get_center,
-            stroke_color=YELLOW,
-            stroke_width=2,
+            stroke_color=t.accent,
+            stroke_width=t.axis_stroke_width,
             stroke_opacity=0.7
         )
 
@@ -437,7 +418,7 @@ class VectorFieldVisualization(Scene):
         # PHASE 4: TRANSFORM - Show radial outward field
         # =====================================================================
 
-        new_title = Text("Radial Vector Field", font_size=32)
+        new_title = Text("Radial Vector Field", font_size=t.subtitle_size)
         new_title.to_edge(UP)
 
         # Radial outward field: F(x,y) = (x, y)
@@ -462,10 +443,10 @@ class VectorFieldVisualization(Scene):
                     arrow = Line(
                         start,
                         start + norm_dir,
-                        color=ORANGE,
-                        stroke_width=3
+                        color=t.accent2,
+                        stroke_width=t.curve_stroke_width
                     )
-                    tip = Dot(start + norm_dir, radius=0.05, color=ORANGE)
+                    tip = Dot(start + norm_dir, radius=0.05, color=t.accent2)
                     new_arrows.add(VGroup(arrow, tip))
 
         self.play(
@@ -479,13 +460,15 @@ class VectorFieldVisualization(Scene):
         self.wait(2)
 
 
-class ComplexMultiplication(Scene):
+class ComplexMultiplication(ThemedScene):
     """
     Visualize multiplication of complex numbers as rotation and scaling.
     Shows why i * i = -1 makes geometric sense.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create complex plane
         # =====================================================================
@@ -494,16 +477,16 @@ class ComplexMultiplication(Scene):
             x_range=[-4, 4, 1],
             y_range=[-3, 3, 1],
             background_line_style={
-                "stroke_color": GREY_B,
-                "stroke_width": 1,
+                "stroke_color": t.muted,
+                "stroke_width": t.fine_stroke_width,
                 "stroke_opacity": 0.4,
             }
         )
 
         # Labels for axes
-        real_label = Text("Real", font_size=20, color=REAL_COLOR)
+        real_label = Text("Real", font_size=t.small_size, color=t.primary)
         real_label.next_to(plane.get_x_axis().get_end(), DOWN)
-        imag_label = Text("Imaginary", font_size=20, color=IMAG_COLOR)
+        imag_label = Text("Imaginary", font_size=t.small_size, color=t.tertiary)
         imag_label.next_to(plane.get_y_axis().get_end(), RIGHT)
 
         self.play(Create(plane), run_time=1.5)
@@ -514,14 +497,14 @@ class ComplexMultiplication(Scene):
         # PHASE 2: BUILD - Show a complex number as a point/vector
         # =====================================================================
 
-        title = Text("z = 2 + i", font_size=36)
+        title = Text("z = 2 + i", font_size=t.subtitle_size)
         title.to_corner(UL)
 
         # Complex number z = 2 + i -> point at (2, 1)
         z_point = np.array([2, 1, 0])
-        z_line = Line(ORIGIN, z_point, color=COMPLEX_COLOR, stroke_width=4)
-        z_dot = Dot(z_point, color=COMPLEX_COLOR, radius=0.12)
-        z_label = Text("z", color=COMPLEX_COLOR, font_size=28)
+        z_line = Line(ORIGIN, z_point, color=t.accent2, stroke_width=4)
+        z_dot = Dot(z_point, color=t.accent2, radius=0.12)
+        z_label = Text("z", color=t.accent2, font_size=t.body_size)
         z_label.next_to(z_dot, UR, buff=0.1)
 
         self.play(Write(title))
@@ -533,7 +516,7 @@ class ComplexMultiplication(Scene):
         # PHASE 3: DEMONSTRATE - Multiply by i (rotation by 90 degrees)
         # =====================================================================
 
-        multiply_text = Text("Multiply by i = 90 deg rotation", font_size=28)
+        multiply_text = Text("Multiply by i = 90 deg rotation", font_size=t.body_size)
         multiply_text.to_corner(UR)
         self.play(Write(multiply_text))
         self.wait(0.5)
@@ -546,15 +529,15 @@ class ComplexMultiplication(Scene):
             radius=0.8,
             start_angle=np.arctan2(1, 2),
             angle=PI / 2,
-            color=YELLOW
+            color=t.accent
         )
 
         self.play(Create(angle_arc))
 
         # Animate the rotation
-        iz_line = Line(ORIGIN, iz_point, color=GREEN, stroke_width=4)
-        iz_dot = Dot(iz_point, color=GREEN, radius=0.12)
-        iz_label = Text("iz = -1 + 2i", color=GREEN, font_size=24)
+        iz_line = Line(ORIGIN, iz_point, color=t.tertiary, stroke_width=4)
+        iz_dot = Dot(iz_point, color=t.tertiary, radius=0.12)
+        iz_label = Text("iz = -1 + 2i", color=t.tertiary, font_size=t.label_size)
         iz_label.next_to(iz_dot, UL, buff=0.1)
 
         self.play(Create(iz_line), FadeIn(iz_dot), Write(iz_label), run_time=2)
@@ -577,31 +560,31 @@ class ComplexMultiplication(Scene):
         )
 
         # New demonstration: start with 1, multiply by i twice
-        new_title = Text("Why does i^2 = -1?", font_size=36)
+        new_title = Text("Why does i^2 = -1?", font_size=t.subtitle_size)
         new_title.to_corner(UL)
         self.play(Write(new_title))
 
         # Start at 1
         one_point = np.array([1, 0, 0])
-        one_line = Line(ORIGIN, one_point, color=BLUE, stroke_width=4)
-        one_dot = Dot(one_point, color=BLUE, radius=0.12)
-        one_label = Text("1", color=BLUE, font_size=28)
+        one_line = Line(ORIGIN, one_point, color=t.primary, stroke_width=4)
+        one_dot = Dot(one_point, color=t.primary, radius=0.12)
+        one_label = Text("1", color=t.primary, font_size=t.body_size)
         one_label.next_to(one_point, DR, buff=0.1)
 
         self.play(Create(one_line), FadeIn(one_dot), Write(one_label))
         self.wait(0.5)
 
         # First multiplication by i: 1 -> i
-        step1 = Text("x i", font_size=24, color=YELLOW).next_to(new_title, DOWN)
+        step1 = Text("x i", font_size=t.label_size, color=t.accent).next_to(new_title, DOWN)
         self.play(Write(step1))
 
         i_point = np.array([0, 1, 0])
-        arc1 = Arc(radius=0.5, start_angle=0, angle=PI / 2, color=YELLOW)
+        arc1 = Arc(radius=0.5, start_angle=0, angle=PI / 2, color=t.accent)
         self.play(Create(arc1))
 
-        i_line = Line(ORIGIN, i_point, color=GREEN, stroke_width=4)
-        i_dot = Dot(i_point, color=GREEN, radius=0.12)
-        i_label = Text("i", color=GREEN, font_size=28)
+        i_line = Line(ORIGIN, i_point, color=t.tertiary, stroke_width=4)
+        i_dot = Dot(i_point, color=t.tertiary, radius=0.12)
+        i_label = Text("i", color=t.tertiary, font_size=t.body_size)
         i_label.next_to(i_point, UR, buff=0.1)
 
         self.play(
@@ -613,16 +596,16 @@ class ComplexMultiplication(Scene):
         self.wait(0.5)
 
         # Second multiplication by i: i -> -1
-        step2 = Text("x i again", font_size=24, color=YELLOW).next_to(step1, DOWN)
+        step2 = Text("x i again", font_size=t.label_size, color=t.accent).next_to(step1, DOWN)
         self.play(Write(step2))
 
         neg_one_point = np.array([-1, 0, 0])
-        arc2 = Arc(radius=0.5, start_angle=PI / 2, angle=PI / 2, color=YELLOW)
+        arc2 = Arc(radius=0.5, start_angle=PI / 2, angle=PI / 2, color=t.accent)
         self.play(Create(arc2))
 
-        neg_one_line = Line(ORIGIN, neg_one_point, color=RED, stroke_width=4)
-        neg_one_dot = Dot(neg_one_point, color=RED, radius=0.12)
-        neg_one_label = Text("-1", color=RED, font_size=28)
+        neg_one_line = Line(ORIGIN, neg_one_point, color=t.secondary, stroke_width=4)
+        neg_one_dot = Dot(neg_one_point, color=t.secondary, radius=0.12)
+        neg_one_label = Text("-1", color=t.secondary, font_size=t.body_size)
         neg_one_label.next_to(neg_one_point, UL, buff=0.1)
 
         self.play(
@@ -633,22 +616,24 @@ class ComplexMultiplication(Scene):
         )
 
         # Final result
-        final_result = Text("Two 90 deg rotations = 180 deg = multiply by -1", font_size=28, color=YELLOW)
+        final_result = Text("Two 90 deg rotations = 180 deg = multiply by -1", font_size=t.body_size, color=t.accent)
         final_result.to_edge(DOWN)
 
-        box = SurroundingRectangle(final_result, color=YELLOW, buff=0.15)
+        box = SurroundingRectangle(final_result, color=t.accent, buff=0.15)
 
         self.play(Write(final_result), Create(box))
         self.wait(2)
 
 
-class FourierSeriesSquareWave(Scene):
+class FourierSeriesSquareWave(ThemedScene):
     """
     Build a square wave from sine waves - the Fourier series.
     Shows how any periodic function can be built from sinusoids.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create axes
         # =====================================================================
@@ -662,7 +647,7 @@ class FourierSeriesSquareWave(Scene):
         )
         axes.shift(DOWN * 0.5)
 
-        title = Text("Building a Square Wave from Sine Waves", font_size=28)
+        title = Text("Building a Square Wave from Sine Waves", font_size=t.body_size)
         title.to_edge(UP)
 
         self.play(Create(axes), Write(title), run_time=1.5)
@@ -679,13 +664,13 @@ class FourierSeriesSquareWave(Scene):
         square = axes.plot(
             square_wave,
             x_range=[0.01, 4 * PI - 0.01],
-            color=GREY,
-            stroke_width=2,
+            color=t.muted,
+            stroke_width=t.axis_stroke_width,
             use_smoothing=False,
             discontinuities=[PI, 2 * PI, 3 * PI],
         )
 
-        target_label = Text("Target: Square Wave", font_size=20, color=GREY)
+        target_label = Text("Target: Square Wave", font_size=t.small_size, color=t.muted)
         target_label.to_corner(UR)
 
         self.play(Create(square), Write(target_label))
@@ -702,16 +687,16 @@ class FourierSeriesSquareWave(Scene):
                 result += (4 / PI) * (1 / n) * np.sin(n * x)
             return result
 
-        colors = [BLUE, GREEN, ORANGE, PURPLE, TEAL, PINK]
+        colors = [t.primary, t.tertiary, t.accent2, t.accent, t.secondary, t.muted]
 
         # Start with n=1 (fundamental)
         current_approx = axes.plot(
             lambda x: fourier_approx(x, 1),
             color=colors[0],
-            stroke_width=3
+            stroke_width=t.curve_stroke_width
         )
 
-        term_label = Text("n=1: sin(x)", font_size=24)
+        term_label = Text("n=1: sin(x)", font_size=t.label_size)
         term_label.next_to(axes, DOWN, buff=0.3)
 
         self.play(Create(current_approx), Write(term_label))
@@ -731,10 +716,10 @@ class FourierSeriesSquareWave(Scene):
             new_approx = axes.plot(
                 lambda x, n=n_terms: fourier_approx(x, n),
                 color=colors[min(n_terms - 1, len(colors) - 1)],
-                stroke_width=3
+                stroke_width=t.curve_stroke_width
             )
 
-            new_label = Text(label_text, font_size=24)
+            new_label = Text(label_text, font_size=t.label_size)
             new_label.next_to(axes, DOWN, buff=0.3)
 
             self.play(
@@ -748,19 +733,21 @@ class FourierSeriesSquareWave(Scene):
         # PHASE 4: RESOLUTION - Final insight
         # =====================================================================
 
-        final_text = Text("Any periodic function = sum of sines!", font_size=28, color=HIGHLIGHT_COLOR)
+        final_text = Text("Any periodic function = sum of sines!", font_size=t.body_size, color=t.accent)
         final_text.next_to(axes, DOWN, buff=0.5)
 
         self.play(Transform(term_label, final_text))
         self.wait(2)
 
 
-class PendulumMotion(Scene):
+class PendulumMotion(ThemedScene):
     """
     Simple harmonic motion of a pendulum showing sine wave connection.
     """
 
     def construct(self):
+        t = self.theme
+
         # =====================================================================
         # PHASE 1: SETUP - Create pendulum and graph
         # =====================================================================
@@ -768,7 +755,7 @@ class PendulumMotion(Scene):
         pivot = UP * 2.5 + LEFT * 4
         length = 2.5
 
-        pivot_dot = Dot(pivot, color=WHITE, radius=0.08)
+        pivot_dot = Dot(pivot, color=t.foreground, radius=0.08)
 
         # Graph on the right
         axes = Axes(
@@ -780,11 +767,11 @@ class PendulumMotion(Scene):
         )
         axes.shift(RIGHT * 2)
 
-        title = Text("Pendulum Motion = Sine Wave", font_size=28)
+        title = Text("Pendulum Motion = Sine Wave", font_size=t.body_size)
         title.to_edge(UP)
 
-        x_label = Text("time", font_size=20).next_to(axes.x_axis.get_end(), DOWN)
-        y_label = Text("angle", font_size=20).next_to(axes.y_axis.get_end(), LEFT)
+        x_label = Text("time", font_size=t.small_size).next_to(axes.x_axis.get_end(), DOWN)
+        y_label = Text("angle", font_size=t.small_size).next_to(axes.y_axis.get_end(), LEFT)
 
         self.play(
             FadeIn(pivot_dot),
@@ -799,12 +786,12 @@ class PendulumMotion(Scene):
         # PHASE 2: BUILD - Create pendulum with angle tracker
         # =====================================================================
 
-        t = ValueTracker(0)
+        time_tracker = ValueTracker(0)
         amplitude = 0.8
         omega = 1.5
 
         def get_angle():
-            return amplitude * np.sin(omega * t.get_value())
+            return amplitude * np.sin(omega * time_tracker.get_value())
 
         # Pendulum bob
         bob = always_redraw(lambda: Dot(
@@ -813,7 +800,7 @@ class PendulumMotion(Scene):
                 -np.cos(get_angle()),
                 0
             ]),
-            color=BLUE,
+            color=t.primary,
             radius=0.2
         ))
 
@@ -825,12 +812,12 @@ class PendulumMotion(Scene):
                 -np.cos(get_angle()),
                 0
             ]),
-            color=WHITE,
-            stroke_width=3
+            color=t.foreground,
+            stroke_width=t.curve_stroke_width
         ))
 
         # Dashed vertical reference
-        vertical_ref = DashedLine(pivot, pivot + DOWN * length, color=GREY, stroke_width=1)
+        vertical_ref = DashedLine(pivot, pivot + DOWN * length, color=t.muted, stroke_width=t.fine_stroke_width)
 
         # Angle arc
         angle_arc = always_redraw(lambda: Arc(
@@ -838,7 +825,7 @@ class PendulumMotion(Scene):
             start_angle=-PI / 2,
             angle=get_angle(),
             arc_center=pivot,
-            color=YELLOW
+            color=t.accent
         ) if abs(get_angle()) > 0.05 else VGroup())
 
         self.play(
@@ -856,18 +843,18 @@ class PendulumMotion(Scene):
         # Point on the graph that traces the sine wave
         trace_point = always_redraw(lambda: Dot(
             axes.c2p(
-                min(t.get_value(), 4 * PI),
-                amplitude * np.sin(omega * t.get_value())
+                min(time_tracker.get_value(), 4 * PI),
+                amplitude * np.sin(omega * time_tracker.get_value())
             ),
-            color=YELLOW,
+            color=t.accent,
             radius=0.08
         ))
 
         # Use TracedPath for the wave
         trace = TracedPath(
             trace_point.get_center,
-            stroke_color=BLUE,
-            stroke_width=3,
+            stroke_color=t.primary,
+            stroke_width=t.curve_stroke_width,
             dissipating_time=None
         )
 
@@ -876,7 +863,7 @@ class PendulumMotion(Scene):
 
         # Animate the pendulum swinging
         self.play(
-            t.animate.set_value(4 * PI),
+            time_tracker.animate.set_value(4 * PI),
             run_time=8,
             rate_func=linear
         )
@@ -885,7 +872,7 @@ class PendulumMotion(Scene):
         # PHASE 4: EXPLAIN - Add formula
         # =====================================================================
 
-        formula = Text("angle(t) = A * sin(w*t)", font_size=24, color=HIGHLIGHT_COLOR)
+        formula = Text("angle(t) = A * sin(w*t)", font_size=t.label_size, color=t.accent)
         formula.to_corner(DR)
 
         self.play(Write(formula))
