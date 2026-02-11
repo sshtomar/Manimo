@@ -1,0 +1,27 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo 2: Fluid Motion - Organic, flowing, animated feeling -->
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="50%" style="stop-color:#764ba2"/>
+      <stop offset="100%" style="stop-color:#f093fb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Flowing M shape made of curves -->
+  <path d="M40 140
+           Q40 60 70 60
+           Q90 60 100 100
+           Q110 60 130 60
+           Q160 60 160 140"
+        stroke="url(#flowGrad)"
+        stroke-width="12"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- Animated dot trail -->
+  <circle cx="55" cy="95" r="6" fill="#667eea"/>
+  <circle cx="100" cy="100" r="8" fill="#764ba2"/>
+  <circle cx="145" cy="95" r="6" fill="#f093fb"/>
+</svg>

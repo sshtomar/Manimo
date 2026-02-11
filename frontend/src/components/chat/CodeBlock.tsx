@@ -8,9 +8,10 @@ import { Copy, Check } from 'lucide-react'
 interface CodeBlockProps {
   code: string
   language?: string
+  filename?: string
 }
 
-export function CodeBlock({ code, language = 'python' }: CodeBlockProps) {
+export function CodeBlock({ code, language = 'python', filename }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -20,24 +21,44 @@ export function CodeBlock({ code, language = 'python' }: CodeBlockProps) {
   }
 
   return (
-    <div className="relative group rounded-lg overflow-hidden">
+    <div className="group relative overflow-hidden rounded-lg border border-slate-200">
+      {/* Header */}
+      {filename && (
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-3 py-2">
+          <span className="font-mono text-xs text-slate-500">
+            {filename}
+          </span>
+        </div>
+      )}
+
+      {/* Copy button */}
       <button
         onClick={handleCopy}
-        className="absolute right-2 top-2 p-2 rounded-md bg-gray-700/50 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-700"
+        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-md bg-slate-800/80 opacity-0 backdrop-blur transition-opacity hover:bg-slate-700 group-hover:opacity-100"
+        aria-label="Copy code"
       >
         {copied ? (
-          <Check className="h-4 w-4 text-green-400" />
+          <Check className="h-3.5 w-3.5 text-green-400" />
         ) : (
-          <Copy className="h-4 w-4 text-gray-300" />
+          <Copy className="h-3.5 w-3.5 text-slate-300" />
         )}
       </button>
+
+      {/* Code */}
       <SyntaxHighlighter
         language={language}
         style={oneDark}
         customStyle={{
           margin: 0,
-          borderRadius: '0.5rem',
-          fontSize: '0.875rem',
+          borderRadius: filename ? 0 : '0.5rem',
+          fontSize: '13px',
+          lineHeight: '1.6',
+          padding: '16px',
+        }}
+        codeTagProps={{
+          style: {
+            fontFamily: 'var(--font-mono), JetBrains Mono, monospace',
+          },
         }}
       >
         {code}

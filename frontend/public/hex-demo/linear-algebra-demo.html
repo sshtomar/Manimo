@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manimo - Linear Algebra Visualizations Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* CSS Variables - Manimo Design System */
+    :root {
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-300: #CBD5E1;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      --gray-950: #020617;
+
+      --amber-50: #FFFBEB;
+      --amber-100: #FEF3C7;
+      --amber-200: #FDE68A;
+      --amber-300: #FCD34D;
+      --amber-400: #FBBF24;
+      --amber-500: #F59E0B;
+      --amber-600: #D97706;
+      --amber-700: #B45309;
+
+      --success: #22C55E;
+      --info: #3B82F6;
+      --purple: #A855F7;
+      --pink: #EC4899;
+      --cyan: #06B6D4;
+
+      --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+      --shadow-card: 0 0 0 0.5px var(--gray-200),
+                     0 4px 12px rgba(0, 0, 0, 0.05),
+                     0 1px 3px rgba(0, 0, 0, 0.03);
+      --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+      --duration-fast: 150ms;
+      --duration-normal: 200ms;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.6;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    /* Page header */
+    .page-header {
+      max-width: 1440px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      border: 0.5px solid var(--gray-200);
+      background: white;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .nav-link:hover {
+      border-color: var(--amber-300);
+      background: var(--amber-50);
+      color: var(--amber-700);
+    }
+
+    .nav-link.active {
+      background: var(--gray-900);
+      color: white;
+      border-color: var(--gray-900);
+    }
+
+    /* Demo grid */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* Card base */
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      transition: transform var(--duration-normal) var(--ease-out),
+                  box-shadow var(--duration-normal) var(--ease-out);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 0 0.5px var(--gray-300),
+                  0 20px 40px rgba(0, 0, 0, 0.08),
+                  0 8px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 0.5px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .card-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-linalg {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--info);
+    }
+
+    .badge-transform {
+      background: rgba(168, 85, 247, 0.1);
+      color: var(--purple);
+    }
+
+    .badge-eigen {
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--cyan);
+    }
+
+    /* Animation canvas */
+    .animation-canvas {
+      background: var(--gray-900);
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .canvas-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 16px 20px;
+    }
+
+    .card-description {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* Code snippet */
+    .code-snippet {
+      background: var(--gray-50);
+      border: 0.5px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .code-snippet .keyword { color: var(--purple); font-weight: 500; }
+    .code-snippet .string { color: var(--success); }
+    .code-snippet .function { color: var(--amber-500); }
+    .code-snippet .comment { color: var(--gray-400); font-style: italic; }
+    .code-snippet .number { color: var(--info); }
+
+    /* Card footer */
+    .card-footer {
+      padding: 12px 20px;
+      border-top: 0.5px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--gray-50);
+    }
+
+    .card-meta {
+      font-size: 11px;
+      color: var(--gray-500);
+      display: flex;
+      gap: 12px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 0.5px solid var(--gray-200);
+      background: white;
+      color: var(--gray-700);
+      transition: all var(--duration-fast) var(--ease-out);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-sm:hover {
+      background: var(--gray-100);
+      border-color: var(--gray-300);
+    }
+
+    .btn-accent {
+      background: var(--amber-500);
+      color: white;
+      border-color: var(--amber-500);
+    }
+
+    .btn-accent:hover {
+      background: var(--amber-600);
+      border-color: var(--amber-600);
+    }
+
+    /* SVG Styles */
+    .axis {
+      stroke: var(--gray-600);
+      stroke-width: 1;
+    }
+
+    .grid-line {
+      stroke: var(--gray-700);
+      stroke-width: 0.5;
+      opacity: 0.3;
+    }
+
+    .label {
+      fill: var(--gray-400);
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .math-label {
+      fill: var(--amber-400);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    /* Vector styles */
+    .vector {
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .vector-i {
+      stroke: var(--amber-500);
+    }
+
+    .vector-j {
+      stroke: var(--info);
+    }
+
+    .vector-result {
+      stroke: var(--purple);
+    }
+
+    .vector-eigen {
+      stroke: var(--cyan);
+    }
+
+    /* Grid deformation */
+    .grid-original {
+      stroke: var(--gray-600);
+      stroke-width: 0.5;
+      opacity: 0.4;
+    }
+
+    .grid-transformed {
+      stroke: var(--amber-500);
+      stroke-width: 0.5;
+      opacity: 0.6;
+    }
+
+    /* Matrix display */
+    .matrix-bracket {
+      stroke: var(--gray-400);
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .matrix-element {
+      fill: var(--gray-300);
+      font-size: 14px;
+      font-family: var(--font-mono);
+      text-anchor: middle;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .animate-pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Linear Algebra Visualizations</h1>
+      <p class="page-subtitle">See the geometry behind the math</p>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Main Demo</a>
+      <a href="calculus-demo.html" class="nav-link">Calculus</a>
+      <a href="linear-algebra-demo.html" class="nav-link active">Linear Algebra</a>
+    </nav>
+  </header>
+
+  <div class="demo-grid">
+    <!-- Linear Transformation -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Linear Transformation</h2>
+        <span class="card-badge badge-transform">Transform</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--amber-500)"/>
+            </marker>
+            <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--info)"/>
+            </marker>
+            <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--purple)"/>
+            </marker>
+          </defs>
+
+          <!-- Original grid (left) -->
+          <g transform="translate(100, 100)">
+            <!-- Grid lines -->
+            <line class="grid-original" x1="-60" y1="-60" x2="-60" y2="60"/>
+            <line class="grid-original" x1="-30" y1="-60" x2="-30" y2="60"/>
+            <line class="grid-original" x1="0" y1="-60" x2="0" y2="60"/>
+            <line class="grid-original" x1="30" y1="-60" x2="30" y2="60"/>
+            <line class="grid-original" x1="60" y1="-60" x2="60" y2="60"/>
+            <line class="grid-original" x1="-60" y1="-60" x2="60" y2="-60"/>
+            <line class="grid-original" x1="-60" y1="-30" x2="60" y2="-30"/>
+            <line class="grid-original" x1="-60" y1="0" x2="60" y2="0"/>
+            <line class="grid-original" x1="-60" y1="30" x2="60" y2="30"/>
+            <line class="grid-original" x1="-60" y1="60" x2="60" y2="60"/>
+
+            <!-- Basis vectors -->
+            <line x1="0" y1="0" x2="30" y2="0" class="vector vector-i" marker-end="url(#arrow-amber)"/>
+            <line x1="0" y1="0" x2="0" y2="-30" class="vector vector-j" marker-end="url(#arrow-blue)"/>
+
+            <circle cx="0" cy="0" r="3" fill="white"/>
+            <text class="label" x="35" y="5">i</text>
+            <text class="label" x="5" y="-35">j</text>
+          </g>
+
+          <!-- Arrow between -->
+          <path d="M 170 100 L 210 100" stroke="var(--gray-500)" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+          <text class="label" x="185" y="90" text-anchor="middle">T</text>
+
+          <!-- Transformed grid (right) -->
+          <g transform="translate(300, 100)">
+            <!-- Transformed grid (sheared) -->
+            <line class="grid-transformed" x1="-60" y1="-30" x2="-30" y2="90">
+              <animate attributeName="x2" values="-60;-30;-60" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="60;90;60" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line class="grid-transformed" x1="-30" y1="-45" x2="0" y2="75">
+              <animate attributeName="x2" values="-30;0;-30" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="45;75;45" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line class="grid-transformed" x1="0" y1="-60" x2="30" y2="60">
+              <animate attributeName="x2" values="0;30;0" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line class="grid-transformed" x1="30" y1="-75" x2="60" y2="45">
+              <animate attributeName="x2" values="30;60;30" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="45;45;45" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line class="grid-transformed" x1="60" y1="-90" x2="90" y2="30">
+              <animate attributeName="x2" values="60;90;60" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="30;30;30" dur="3s" repeatCount="indefinite"/>
+            </line>
+
+            <!-- Horizontal lines -->
+            <line class="grid-transformed" x1="-60" y1="-30" x2="60" y2="-30"/>
+            <line class="grid-transformed" x1="-45" y1="0" x2="75" y2="0">
+              <animate attributeName="x1" values="-60;-45;-60" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="x2" values="60;75;60" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line class="grid-transformed" x1="-30" y1="30" x2="90" y2="30">
+              <animate attributeName="x1" values="-60;-30;-60" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="x2" values="60;90;60" dur="3s" repeatCount="indefinite"/>
+            </line>
+
+            <!-- Transformed basis vectors -->
+            <line x1="0" y1="0" x2="30" y2="0" class="vector vector-i" marker-end="url(#arrow-amber)"/>
+            <line x1="0" y1="0" x2="15" y2="-30" class="vector vector-j" marker-end="url(#arrow-blue)">
+              <animate attributeName="x2" values="0;15;0" dur="3s" repeatCount="indefinite"/>
+            </line>
+
+            <circle cx="0" cy="0" r="3" fill="white"/>
+            <text class="label" x="35" y="5">T(i)</text>
+            <text class="label" x="20" y="-35">T(j)</text>
+          </g>
+
+          <text class="math-label" x="200" y="185" text-anchor="middle">Shear transformation</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-description">
+          Watch how linear transformations change the grid while preserving lines and the origin. See basis vectors determine the entire transformation.
+        </p>
+        <div class="code-snippet">
+<span class="comment"># Shear transformation matrix</span>
+matrix = [[<span class="number">1</span>, <span class="number">0.5</span>], [<span class="number">0</span>, <span class="number">1</span>]]
+grid = NumberPlane()
+self.play(grid.animate.apply_matrix(matrix))
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            10s
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            </svg>
+            1080p
+          </span>
+        </div>
+        <button class="btn-sm btn-accent">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+    </div>
+
+    <!-- Eigenvectors -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Eigenvectors & Eigenvalues</h2>
+        <span class="card-badge badge-eigen">Eigen</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow-cyan" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--cyan)"/>
+            </marker>
+            <marker id="arrow-pink" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--pink)"/>
+            </marker>
+          </defs>
+
+          <g transform="translate(200, 100)">
+            <!-- Grid (faded) -->
+            <line class="grid-original" x1="-150" y1="0" x2="150" y2="0"/>
+            <line class="grid-original" x1="0" y1="-80" x2="0" y2="80"/>
+
+            <!-- Regular vectors (get rotated) -->
+            <line x1="0" y1="0" x2="50" y2="-30" stroke="var(--gray-500)" stroke-width="1.5" stroke-dasharray="4,2">
+              <animate attributeName="x2" values="50;70;50" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="-30;-10;-30" dur="2s" repeatCount="indefinite"/>
+            </line>
+            <line x1="0" y1="0" x2="-40" y2="40" stroke="var(--gray-500)" stroke-width="1.5" stroke-dasharray="4,2">
+              <animate attributeName="x2" values="-40;-50;-40" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="40;20;40" dur="2s" repeatCount="indefinite"/>
+            </line>
+
+            <!-- Eigenvector 1 (only scales) -->
+            <line x1="0" y1="0" x2="60" y2="30" stroke="var(--cyan)" stroke-width="2.5" marker-end="url(#arrow-cyan)">
+              <animate attributeName="x2" values="60;90;60" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="30;45;30" dur="2s" repeatCount="indefinite"/>
+            </line>
+            <text class="label" style="fill: var(--cyan);" x="65" y="15">v1 (eigenvalue = 1.5)</text>
+
+            <!-- Eigenvector 2 (only scales, different rate) -->
+            <line x1="0" y1="0" x2="-40" y2="20" stroke="var(--pink)" stroke-width="2.5" marker-end="url(#arrow-pink)">
+              <animate attributeName="x2" values="-40;-20;-40" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="20;10;20" dur="2s" repeatCount="indefinite"/>
+            </line>
+            <text class="label" style="fill: var(--pink);" x="-90" y="35">v2 (eigenvalue = 0.5)</text>
+
+            <!-- Origin -->
+            <circle cx="0" cy="0" r="4" fill="white"/>
+          </g>
+
+          <text class="math-label" x="200" y="185" text-anchor="middle">Eigenvectors stay on their span!</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-description">
+          Eigenvectors don't change direction under transformation, only scale. This is the key insight that makes diagonalization possible.
+        </p>
+        <div class="code-snippet">
+<span class="comment"># Find eigenvectors</span>
+A = np.array([[<span class="number">2</span>, <span class="number">1</span>], [<span class="number">1</span>, <span class="number">2</span>]])
+eigenvalues, eigenvectors = np.linalg.eig(A)
+<span class="comment"># Animate: Av = lambda * v</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            15s
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            </svg>
+            1080p
+          </span>
+        </div>
+        <button class="btn-sm btn-accent">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+    </div>
+
+    <!-- Matrix Multiplication -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Matrix Multiplication</h2>
+        <span class="card-badge badge-linalg">Composition</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <!-- Matrix A -->
+          <g transform="translate(60, 100)">
+            <path class="matrix-bracket" d="M -5 -35 L -15 -35 L -15 35 L -5 35"/>
+            <path class="matrix-bracket" d="M 45 -35 L 55 -35 L 55 35 L 45 35"/>
+            <text class="matrix-element" x="10" y="-15">2</text>
+            <text class="matrix-element" x="35" y="-15">1</text>
+            <text class="matrix-element" x="10" y="15">0</text>
+            <text class="matrix-element" x="35" y="15">1</text>
+            <text class="label" x="20" y="55" text-anchor="middle">A (scale + shear)</text>
+          </g>
+
+          <!-- Times symbol -->
+          <text fill="var(--gray-400)" x="130" y="105" font-size="20">x</text>
+
+          <!-- Matrix B -->
+          <g transform="translate(175, 100)">
+            <path class="matrix-bracket" d="M -5 -35 L -15 -35 L -15 35 L -5 35"/>
+            <path class="matrix-bracket" d="M 45 -35 L 55 -35 L 55 35 L 45 35"/>
+            <text class="matrix-element" x="10" y="-15">0</text>
+            <text class="matrix-element" x="35" y="-15">-1</text>
+            <text class="matrix-element" x="10" y="15">1</text>
+            <text class="matrix-element" x="35" y="15">0</text>
+            <text class="label" x="20" y="55" text-anchor="middle">B (90 rotation)</text>
+          </g>
+
+          <!-- Equals -->
+          <text fill="var(--gray-400)" x="250" y="105" font-size="20">=</text>
+
+          <!-- Matrix AB -->
+          <g transform="translate(295, 100)">
+            <path class="matrix-bracket" style="stroke: var(--amber-500);" d="M -5 -35 L -15 -35 L -15 35 L -5 35"/>
+            <path class="matrix-bracket" style="stroke: var(--amber-500);" d="M 45 -35 L 55 -35 L 55 35 L 45 35"/>
+            <text class="matrix-element" style="fill: var(--amber-400);" x="10" y="-15">1</text>
+            <text class="matrix-element" style="fill: var(--amber-400);" x="35" y="-15">-2</text>
+            <text class="matrix-element" style="fill: var(--amber-400);" x="10" y="15">1</text>
+            <text class="matrix-element" style="fill: var(--amber-400);" x="35" y="15">0</text>
+            <text class="label" style="fill: var(--amber-400);" x="20" y="55" text-anchor="middle">AB (combined)</text>
+          </g>
+
+          <!-- Visual interpretation -->
+          <g transform="translate(370, 50)">
+            <text class="label" x="0" y="0" text-anchor="end">Apply B first,</text>
+            <text class="label" x="0" y="15" text-anchor="end">then A</text>
+          </g>
+
+          <text class="math-label" x="200" y="185" text-anchor="middle">Composition of transformations</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-description">
+          Matrix multiplication is function composition. Watch how applying two transformations in sequence creates a single combined transformation.
+        </p>
+        <div class="code-snippet">
+<span class="comment"># Compose transformations</span>
+A = [[<span class="number">2</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>]]  <span class="comment"># shear</span>
+B = [[<span class="number">0</span>, -<span class="number">1</span>], [<span class="number">1</span>, <span class="number">0</span>]]  <span class="comment"># rotate</span>
+AB = np.dot(A, B)  <span class="comment"># combined</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            12s
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            </svg>
+            1080p
+          </span>
+        </div>
+        <button class="btn-sm btn-accent">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+    </div>
+
+    <!-- Determinant -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Determinant as Area</h2>
+        <span class="card-badge badge-linalg">Geometry</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <!-- Before transformation -->
+          <g transform="translate(100, 100)">
+            <text class="label" x="0" y="-70" text-anchor="middle">Before</text>
+
+            <!-- Unit square -->
+            <rect x="0" y="-50" width="50" height="50" fill="var(--amber-500)" opacity="0.3" stroke="var(--amber-500)" stroke-width="1"/>
+
+            <!-- Axes -->
+            <line class="grid-original" x1="-60" y1="0" x2="70" y2="0"/>
+            <line class="grid-original" x1="0" y1="-60" x2="0" y2="20"/>
+
+            <!-- Basis vectors -->
+            <line x1="0" y1="0" x2="50" y2="0" class="vector vector-i" stroke-width="1.5"/>
+            <line x1="0" y1="0" x2="0" y2="-50" class="vector vector-j" stroke-width="1.5"/>
+
+            <text class="label" x="25" y="15" text-anchor="middle">Area = 1</text>
+          </g>
+
+          <!-- Arrow -->
+          <path d="M 170 100 L 210 100" stroke="var(--gray-500)" stroke-width="1.5"/>
+          <polygon points="210,97 218,100 210,103" fill="var(--gray-500)"/>
+
+          <!-- After transformation -->
+          <g transform="translate(300, 100)">
+            <text class="label" x="0" y="-70" text-anchor="middle">After (det = 2)</text>
+
+            <!-- Transformed parallelogram -->
+            <polygon points="0,0 60,0 80,-50 20,-50" fill="var(--amber-500)" opacity="0.3" stroke="var(--amber-500)" stroke-width="1">
+              <animate attributeName="points"
+                values="0,0 50,0 50,-50 0,-50;
+                        0,0 60,0 80,-50 20,-50;
+                        0,0 50,0 50,-50 0,-50"
+                dur="3s" repeatCount="indefinite"/>
+            </polygon>
+
+            <!-- Axes -->
+            <line class="grid-original" x1="-30" y1="0" x2="100" y2="0"/>
+            <line class="grid-original" x1="0" y1="-60" x2="0" y2="20"/>
+
+            <!-- Transformed basis -->
+            <line x1="0" y1="0" x2="60" y2="0" class="vector vector-i" stroke-width="1.5">
+              <animate attributeName="x2" values="50;60;50" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line x1="0" y1="0" x2="20" y2="-50" class="vector vector-j" stroke-width="1.5">
+              <animate attributeName="x2" values="0;20;0" dur="3s" repeatCount="indefinite"/>
+            </line>
+
+            <text class="label" x="40" y="15" text-anchor="middle" style="fill: var(--amber-400);">Area = 2</text>
+          </g>
+
+          <text class="math-label" x="200" y="185" text-anchor="middle">det(A) = scaling factor of area</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-description">
+          The determinant measures how much a transformation scales area (2D) or volume (3D). Negative determinant means orientation is flipped.
+        </p>
+        <div class="code-snippet">
+<span class="comment"># Determinant = area scaling</span>
+A = [[<span class="number">2</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>]]
+det_A = np.linalg.det(A)  <span class="comment"># = 2</span>
+<span class="comment"># Unit square scales to parallelogram with area 2</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            8s
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            </svg>
+            1080p
+          </span>
+        </div>
+        <button class="btn-sm btn-accent">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+    </div>
+
+    <!-- Dot Product -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Dot Product Geometry</h2>
+        <span class="card-badge badge-linalg">Vectors</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow-result" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--success)"/>
+            </marker>
+          </defs>
+
+          <g transform="translate(200, 120)">
+            <!-- Grid -->
+            <line class="grid-original" x1="-150" y1="0" x2="150" y2="0"/>
+            <line class="grid-original" x1="0" y1="-100" x2="0" y2="40"/>
+
+            <!-- Vector a -->
+            <line x1="0" y1="0" x2="100" y2="-30" stroke="var(--amber-500)" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+            <text class="label" style="fill: var(--amber-500);" x="105" y="-25">a</text>
+
+            <!-- Vector b (animated angle) -->
+            <line x1="0" y1="0" x2="70" y2="-70" stroke="var(--info)" stroke-width="2.5" marker-end="url(#arrow-blue)">
+              <animate attributeName="x2" values="100;70;30;70;100" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="0;-70;-60;-70;0" dur="4s" repeatCount="indefinite"/>
+            </line>
+            <text class="label" style="fill: var(--info);" x="75" y="-75">b</text>
+
+            <!-- Projection of b onto a -->
+            <line x1="0" y1="0" x2="65" y2="-19.5" stroke="var(--success)" stroke-width="2" stroke-dasharray="4,2">
+              <animate attributeName="x2" values="100;65;27;65;100" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="0;-19.5;-8;-19.5;0" dur="4s" repeatCount="indefinite"/>
+            </line>
+
+            <!-- Perpendicular line -->
+            <line stroke="var(--gray-600)" stroke-width="1" stroke-dasharray="2,2">
+              <animate attributeName="x1" values="100;65;27;65;100" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="y1" values="0;-19.5;-8;-19.5;0" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="x2" values="100;70;30;70;100" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="0;-70;-60;-70;0" dur="4s" repeatCount="indefinite"/>
+            </line>
+
+            <!-- Angle arc -->
+            <path d="M 20 0 A 20 20 0 0 0 14 -14" stroke="var(--gray-500)" stroke-width="1" fill="none">
+              <animate attributeName="d"
+                values="M 20 0 A 20 20 0 0 0 20 0;
+                        M 20 0 A 20 20 0 0 0 14 -14;
+                        M 20 0 A 20 20 0 0 0 10 -17;
+                        M 20 0 A 20 20 0 0 0 14 -14;
+                        M 20 0 A 20 20 0 0 0 20 0"
+                dur="4s" repeatCount="indefinite"/>
+            </path>
+
+            <!-- Origin -->
+            <circle cx="0" cy="0" r="3" fill="white"/>
+          </g>
+
+          <!-- Formula -->
+          <text class="label" x="50" y="30">a dot b = |a||b|cos(theta)</text>
+          <text class="label" style="fill: var(--success);" x="50" y="50">= projection of b onto a, scaled by |a|</text>
+
+          <text class="math-label" x="200" y="185" text-anchor="middle">Dot product = projection length x |a|</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-description">
+          The dot product measures how much two vectors point in the same direction. It's the projection of one onto the other, times the length.
+        </p>
+        <div class="code-snippet">
+<span class="comment"># Dot product as projection</span>
+a, b = np.array([<span class="number">3</span>, <span class="number">1</span>]), np.array([<span class="number">2</span>, <span class="number">2</span>])
+dot = np.dot(a, b)  <span class="comment"># = 8</span>
+proj_len = dot / np.linalg.norm(a)
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            10s
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            </svg>
+            1080p
+          </span>
+        </div>
+        <button class="btn-sm btn-accent">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+    </div>
+
+    <!-- Change of Basis -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Change of Basis</h2>
+        <span class="card-badge badge-transform">Basis</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <g transform="translate(200, 100)">
+            <!-- Standard basis grid -->
+            <g opacity="0.3">
+              <line class="grid-original" x1="-150" y1="0" x2="150" y2="0"/>
+              <line class="grid-original" x1="0" y1="-80" x2="0" y2="80"/>
+              <line class="grid-original" x1="-150" y1="-40" x2="150" y2="-40"/>
+              <line class="grid-original" x1="-150" y1="40" x2="150" y2="40"/>
+              <line class="grid-original" x1="-80" y1="-80" x2="-80" y2="80"/>
+              <line class="grid-original" x1="80" y1="-80" x2="80" y2="80"/>
+            </g>
+
+            <!-- New basis grid (rotated/scaled) -->
+            <g class="animate-pulse">
+              <line class="grid-transformed" x1="-120" y1="-40" x2="120" y2="40"/>
+              <line class="grid-transformed" x1="-100" y1="60" x2="100" y2="-60"/>
+              <line class="grid-transformed" x1="-80" y1="-60" x2="160" y2="20"/>
+              <line class="grid-transformed" x1="-160" y1="-20" x2="80" y2="60"/>
+            </g>
+
+            <!-- Standard basis vectors (faded) -->
+            <line x1="0" y1="0" x2="40" y2="0" stroke="var(--gray-500)" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--gray-500)" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text class="label" x="45" y="5">e1</text>
+            <text class="label" x="5" y="-45">e2</text>
+
+            <!-- New basis vectors -->
+            <line x1="0" y1="0" x2="50" y2="20" stroke="var(--amber-500)" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+            <line x1="0" y1="0" x2="-20" y2="-50" stroke="var(--info)" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+            <text class="label" style="fill: var(--amber-500);" x="55" y="35">b1</text>
+            <text class="label" style="fill: var(--info);" x="-35" y="-55">b2</text>
+
+            <!-- A vector in both coordinates -->
+            <line x1="0" y1="0" x2="70" y2="-30" stroke="var(--purple)" stroke-width="2" marker-end="url(#arrow-purple)"/>
+            <text class="label" style="fill: var(--purple);" x="75" y="-35">v</text>
+
+            <!-- Coordinate labels -->
+            <text class="label" x="-120" y="-60">[v]_standard = (70, -30)</text>
+            <text class="label" style="fill: var(--amber-400);" x="-120" y="-45">[v]_new = (1.2, 0.8)</text>
+
+            <!-- Origin -->
+            <circle cx="0" cy="0" r="3" fill="white"/>
+          </g>
+
+          <text class="math-label" x="200" y="185" text-anchor="middle">Same vector, different coordinates</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-description">
+          Vectors don't change, but their coordinates depend on the chosen basis. Understanding this is key to diagonalization and SVD.
+        </p>
+        <div class="code-snippet">
+<span class="comment"># Change of basis: P^-1 * A * P</span>
+P = [[<span class="number">2</span>, <span class="number">1</span>], [<span class="number">1</span>, <span class="number">1</span>]]  <span class="comment"># new basis</span>
+v_standard = [<span class="number">70</span>, -<span class="number">30</span>]
+v_new = np.linalg.solve(P, v_standard)
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            15s
+          </span>
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            </svg>
+            1080p
+          </span>
+        </div>
+        <button class="btn-sm btn-accent">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

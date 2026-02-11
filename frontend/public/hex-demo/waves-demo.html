@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manimo - Waves, Fields & Complex Numbers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-300: #CBD5E1;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      --gray-950: #020617;
+
+      --amber-50: #FFFBEB;
+      --amber-100: #FEF3C7;
+      --amber-200: #FDE68A;
+      --amber-300: #FCD34D;
+      --amber-400: #FBBF24;
+      --amber-500: #F59E0B;
+      --amber-600: #D97706;
+      --amber-700: #B45309;
+
+      --blue-400: #60A5FA;
+      --blue-500: #3B82F6;
+      --green-400: #4ADE80;
+      --green-500: #22C55E;
+      --purple-400: #C084FC;
+      --purple-500: #A855F7;
+      --red-400: #F87171;
+      --red-500: #EF4444;
+      --teal-400: #2DD4BF;
+      --teal-500: #14B8A6;
+
+      --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+      --shadow-card: 0 0 0 0.5px var(--gray-200),
+                     0 4px 12px rgba(0, 0, 0, 0.05),
+                     0 1px 3px rgba(0, 0, 0, 0.03);
+      --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.6;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 900px;
+      margin: 0 auto 48px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--amber-100);
+      color: var(--amber-700);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--gray-500);
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+
+    .hero-description {
+      font-size: 14px;
+      color: var(--gray-600);
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-card);
+      text-align: left;
+      line-height: 1.8;
+    }
+
+    .hero-description strong {
+      color: var(--amber-600);
+    }
+
+    /* Navigation */
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+
+    .nav-link {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      border: 0.5px solid var(--gray-200);
+      background: white;
+      transition: all 0.15s var(--ease-out);
+    }
+
+    .nav-link:hover {
+      border-color: var(--amber-300);
+      background: var(--amber-50);
+      color: var(--amber-700);
+    }
+
+    .nav-link.active {
+      background: var(--gray-900);
+      color: white;
+      border-color: var(--gray-900);
+    }
+
+    /* Demo Grid */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 28px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 0 0.5px var(--gray-300),
+                  0 24px 48px rgba(0, 0, 0, 0.1),
+                  0 12px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      padding: 18px 22px;
+      border-bottom: 0.5px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .card-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-wave { background: rgba(59, 130, 246, 0.1); color: var(--blue-500); }
+    .badge-complex { background: rgba(168, 85, 247, 0.1); color: var(--purple-500); }
+    .badge-field { background: rgba(20, 184, 166, 0.1); color: var(--teal-500); }
+    .badge-fourier { background: rgba(34, 197, 94, 0.1); color: var(--green-500); }
+
+    /* Animation Canvas */
+    .animation-canvas {
+      background: var(--gray-900);
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .canvas-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Card Body */
+    .card-body {
+      padding: 18px 22px;
+    }
+
+    .card-conversation {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .card-conversation em {
+      color: var(--gray-500);
+      font-style: italic;
+    }
+
+    .insight-box {
+      background: var(--amber-50);
+      border-left: 3px solid var(--amber-400);
+      padding: 12px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+    }
+
+    .insight-box strong {
+      color: var(--amber-700);
+      font-size: 12px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .insight-box p {
+      font-size: 12px;
+      color: var(--gray-700);
+      margin: 0;
+    }
+
+    /* Code Snippet */
+    .code-snippet {
+      background: var(--gray-50);
+      border: 0.5px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .code-snippet .keyword { color: var(--purple-500); font-weight: 500; }
+    .code-snippet .string { color: var(--green-500); }
+    .code-snippet .function { color: var(--amber-500); }
+    .code-snippet .comment { color: var(--gray-400); font-style: italic; }
+    .code-snippet .number { color: var(--blue-500); }
+
+    /* Card Footer */
+    .card-footer {
+      padding: 14px 22px;
+      border-top: 0.5px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--gray-50);
+    }
+
+    .card-meta {
+      font-size: 11px;
+      color: var(--gray-500);
+      display: flex;
+      gap: 14px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: var(--amber-500);
+      color: white;
+      transition: all 0.15s var(--ease-out);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-sm:hover {
+      background: var(--amber-600);
+      transform: translateY(-1px);
+    }
+
+    /* SVG Styles */
+    .axis { stroke: var(--gray-600); stroke-width: 1; }
+    .grid-line { stroke: var(--gray-700); stroke-width: 0.5; opacity: 0.3; }
+    .wave-blue { stroke: var(--blue-400); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .wave-red { stroke: var(--red-400); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .wave-green { stroke: var(--green-400); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .wave-amber { stroke: var(--amber-400); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .wave-purple { stroke: var(--purple-400); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .label { fill: var(--gray-400); font-size: 10px; font-family: var(--font-mono); }
+    .math-label { fill: var(--amber-400); font-size: 11px; font-family: var(--font-mono); font-weight: 500; }
+
+    .vector-line { stroke: var(--teal-400); stroke-width: 2; fill: none; }
+    .vector-dot { fill: var(--teal-400); }
+    .circle-guide { stroke: var(--gray-600); stroke-width: 1; fill: none; }
+    .complex-line { stroke: var(--purple-400); stroke-width: 3; fill: none; }
+    .complex-dot { fill: var(--purple-400); }
+
+    /* CTA Section */
+    .cta-section {
+      max-width: 800px;
+      margin: 60px auto 0;
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+      border-radius: 20px;
+      color: white;
+    }
+
+    .cta-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .cta-text {
+      font-size: 14px;
+      color: var(--gray-300);
+      margin-bottom: 24px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--amber-500);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s var(--ease-out);
+    }
+
+    .cta-button:hover {
+      background: var(--amber-400);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 900px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-title { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      Powered by Manim + AI
+    </div>
+    <h1 class="hero-title">See the Math. Feel the Math.</h1>
+    <p class="hero-subtitle">
+      Beautiful animations that make abstract concepts click.
+      Because learning should feel like discovery, not memorization.
+    </p>
+    <div class="hero-description">
+      <strong>What is Manimo?</strong> It's a tool that helps you create 3Blue1Brown-style math animations
+      without being a programmer. Just describe what you want to visualize, and our AI writes the code
+      while you watch the animation come to life. Think of it as having Grant Sanderson as your personal
+      animation assistant.
+      <br><br>
+      Below are some examples of what you can create. Each one took less than a minute to generate.
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <nav class="nav-links">
+    <a href="index.html" class="nav-link">Main Demo</a>
+    <a href="calculus-demo.html" class="nav-link">Calculus</a>
+    <a href="linear-algebra-demo.html" class="nav-link">Linear Algebra</a>
+    <a href="waves-demo.html" class="nav-link active">Waves & Fields</a>
+  </nav>
+
+  <!-- Demo Grid -->
+  <div class="demo-grid">
+    <!-- Sine Wave from Circle -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Where Do Sine Waves Come From?</h2>
+        <span class="card-badge badge-wave">Trigonometry</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <!-- Circle on left -->
+          <circle class="circle-guide" cx="80" cy="110" r="50"/>
+
+          <!-- Rotating radius and point -->
+          <line x1="80" y1="110" x2="130" y2="110" class="wave-blue" stroke-width="2">
+            <animateTransform attributeName="transform" type="rotate"
+              from="0 80 110" to="360 80 110" dur="4s" repeatCount="indefinite"/>
+          </line>
+          <circle r="6" fill="#60A5FA">
+            <animateMotion dur="4s" repeatCount="indefinite">
+              <mpath href="#circlePath"/>
+            </animateMotion>
+          </circle>
+          <path id="circlePath" d="M 130 110 A 50 50 0 1 1 130 109.9" fill="none"/>
+
+          <!-- Horizontal connection line -->
+          <line class="wave-amber" stroke-dasharray="4,4" stroke-width="1"
+                x1="130" y1="110" x2="160" y2="110">
+            <animate attributeName="y1"
+              values="60;110;160;110;60" dur="4s" repeatCount="indefinite"/>
+            <animate attributeName="y2"
+              values="60;110;160;110;60" dur="4s" repeatCount="indefinite"/>
+          </line>
+
+          <!-- Sine wave axes -->
+          <line class="axis" x1="160" y1="110" x2="380" y2="110"/>
+
+          <!-- Traced sine wave -->
+          <path class="wave-blue" d="M 160 110
+            Q 187 60 215 110
+            Q 242 160 270 110
+            Q 297 60 325 110
+            Q 352 160 380 110"/>
+
+          <!-- Moving dot on wave -->
+          <circle r="5" fill="#60A5FA">
+            <animate attributeName="cx" values="160;215;270;325;380;325;270;215;160" dur="8s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="110;60;110;160;110;60;110;160;110" dur="8s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Labels -->
+          <text class="math-label" x="80" y="180">Unit Circle</text>
+          <text class="math-label" x="270" y="200">y = sin(theta)</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-conversation">
+          <em>"I never really got why sine looked like a wave..."</em>
+          <br><br>
+          Here's the secret: take a point going around a circle at constant speed.
+          Now just track its height over time. That's it. That's the sine wave.
+        </p>
+        <div class="insight-box">
+          <strong>The "Aha!" moment</strong>
+          <p>Circular motion projected onto a line creates simple harmonic motion. This is why springs, pendulums, and sound waves all follow sine curves.</p>
+        </div>
+        <div class="code-snippet">
+<span class="comment"># The connection is this simple:</span>
+y = radius * sin(angular_velocity * time)
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            12s
+          </span>
+          <span class="meta-item">1080p</span>
+        </div>
+        <button class="btn-sm">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Animation
+        </button>
+      </div>
+    </div>
+
+    <!-- Wave Interference -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">When Waves Meet</h2>
+        <span class="card-badge badge-wave">Superposition</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <!-- Wave 1 -->
+          <g transform="translate(0, 0)">
+            <line class="axis" x1="30" y1="45" x2="370" y2="45"/>
+            <text class="label" x="35" y="25">Wave 1</text>
+            <path class="wave-blue" d="M 30 45 Q 65 20 100 45 Q 135 70 170 45 Q 205 20 240 45 Q 275 70 310 45 Q 345 20 380 45"/>
+          </g>
+
+          <!-- Wave 2 (with phase shift animation) -->
+          <g transform="translate(0, 65)">
+            <line class="axis" x1="30" y1="45" x2="370" y2="45"/>
+            <text class="label" x="35" y="25">Wave 2</text>
+            <path class="wave-red" d="M 30 45 Q 65 20 100 45 Q 135 70 170 45 Q 205 20 240 45 Q 275 70 310 45 Q 345 20 380 45">
+              <animate attributeName="d"
+                values="M 30 45 Q 65 20 100 45 Q 135 70 170 45 Q 205 20 240 45 Q 275 70 310 45 Q 345 20 380 45;
+                        M 30 45 Q 65 70 100 45 Q 135 20 170 45 Q 205 70 240 45 Q 275 20 310 45 Q 345 70 380 45;
+                        M 30 45 Q 65 20 100 45 Q 135 70 170 45 Q 205 20 240 45 Q 275 70 310 45 Q 345 20 380 45"
+                dur="4s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- Sum wave -->
+          <g transform="translate(0, 130)">
+            <line class="axis" x1="30" y1="45" x2="370" y2="45"/>
+            <text class="label" x="35" y="25" style="fill: #4ADE80;">Sum</text>
+            <path class="wave-green" d="M 30 45 Q 65 0 100 45 Q 135 90 170 45 Q 205 0 240 45 Q 275 90 310 45 Q 345 0 380 45">
+              <animate attributeName="d"
+                values="M 30 45 Q 65 0 100 45 Q 135 90 170 45 Q 205 0 240 45 Q 275 90 310 45 Q 345 0 380 45;
+                        M 30 45 L 100 45 L 170 45 L 240 45 L 310 45 L 380 45;
+                        M 30 45 Q 65 0 100 45 Q 135 90 170 45 Q 205 0 240 45 Q 275 90 310 45 Q 345 0 380 45"
+                dur="4s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- Phase label -->
+          <text class="math-label" x="200" y="210" text-anchor="middle">
+            <tspan>phase shift: </tspan>
+            <tspan fill="#F87171">
+              <animate attributeName="textContent" values="0;pi/2;pi;3pi/2;2pi;3pi/2;pi;pi/2;0" dur="4s" repeatCount="indefinite"/>
+              varying
+            </tspan>
+          </text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-conversation">
+          <em>"What happens when two waves hit each other?"</em>
+          <br><br>
+          They add up. It's that simple. When peaks align, you get a bigger wave (constructive).
+          When a peak meets a trough, they cancel out (destructive). This is how noise-canceling
+          headphones work!
+        </p>
+        <div class="insight-box">
+          <strong>Why this matters</strong>
+          <p>Interference explains everything from guitar harmonics to why your WiFi has dead spots to how quantum computers work.</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            18s
+          </span>
+          <span class="meta-item">1080p</span>
+        </div>
+        <button class="btn-sm">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Animation
+        </button>
+      </div>
+    </div>
+
+    <!-- Complex Numbers -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Why Does i² = -1?</h2>
+        <span class="card-badge badge-complex">Complex Numbers</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <!-- Complex plane -->
+          <line class="axis" x1="50" y1="110" x2="350" y2="110"/>
+          <line class="axis" x1="200" y1="30" x2="200" y2="190"/>
+
+          <!-- Labels -->
+          <text class="label" x="340" y="125">Real</text>
+          <text class="label" x="210" y="40">Imaginary</text>
+          <text class="label" x="260" y="125">1</text>
+          <text class="label" x="130" y="125">-1</text>
+          <text class="label" x="205" y="75">i</text>
+
+          <!-- Starting at 1 -->
+          <line x1="200" y1="110" x2="260" y2="110" stroke="#60A5FA" stroke-width="3">
+            <animate attributeName="x2" values="260;200;140;200;260" dur="6s" repeatCount="indefinite"/>
+            <animate attributeName="y2" values="110;60;110;160;110" dur="6s" repeatCount="indefinite"/>
+          </line>
+          <circle r="8" fill="#60A5FA">
+            <animate attributeName="cx" values="260;200;140;200;260" dur="6s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="110;60;110;160;110" dur="6s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Rotation arcs -->
+          <path d="M 230 110 A 30 30 0 0 0 200 80" stroke="#FBBF24" stroke-width="2" fill="none" stroke-dasharray="4,2">
+            <animate attributeName="opacity" values="1;0;0;0;1" dur="6s" repeatCount="indefinite"/>
+          </path>
+          <path d="M 200 80 A 30 30 0 0 0 170 110" stroke="#FBBF24" stroke-width="2" fill="none" stroke-dasharray="4,2">
+            <animate attributeName="opacity" values="0;1;0;0;0" dur="6s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- 90° labels -->
+          <text class="math-label" x="235" y="90" font-size="10">
+            <animate attributeName="opacity" values="1;0;0;0;1" dur="6s" repeatCount="indefinite"/>
+            × i = rotate 90°
+          </text>
+
+          <!-- Journey labels -->
+          <text x="270" y="105" fill="#60A5FA" font-size="12" font-weight="600">
+            <animate attributeName="opacity" values="1;0;0;0;0" dur="6s" repeatCount="indefinite"/>
+            1
+          </text>
+          <text x="205" y="55" fill="#4ADE80" font-size="12" font-weight="600">
+            <animate attributeName="opacity" values="0;1;0;0;0" dur="6s" repeatCount="indefinite"/>
+            i
+          </text>
+          <text x="115" y="105" fill="#F87171" font-size="12" font-weight="600">
+            <animate attributeName="opacity" values="0;0;1;0;0" dur="6s" repeatCount="indefinite"/>
+            -1
+          </text>
+
+          <!-- Bottom explanation -->
+          <text class="math-label" x="200" y="205" text-anchor="middle">
+            Two 90° rotations = 180° = multiply by -1
+          </text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-conversation">
+          <em>"i squared equals negative one always seemed like a weird rule someone made up..."</em>
+          <br><br>
+          But watch this: multiplying by <strong>i</strong> is just rotating by 90°. Do it twice?
+          That's 180°. And rotating 180° on the number line takes you from 1 to -1. That's why
+          i × i = -1. It's not a rule—it's geometry!
+        </p>
+        <div class="insight-box">
+          <strong>Mind = Blown</strong>
+          <p>Complex numbers aren't imaginary nonsense. They're the natural language for anything that rotates: electricity, quantum mechanics, signal processing.</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            20s
+          </span>
+          <span class="meta-item">1080p</span>
+        </div>
+        <button class="btn-sm">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Animation
+        </button>
+      </div>
+    </div>
+
+    <!-- Fourier Series -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Building Shapes from Waves</h2>
+        <span class="card-badge badge-fourier">Fourier</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <!-- Axes -->
+          <line class="axis" x1="30" y1="110" x2="370" y2="110"/>
+
+          <!-- Target square wave (dashed) -->
+          <path d="M 50 70 L 120 70 L 120 150 L 190 150 L 190 70 L 260 70 L 260 150 L 330 150 L 330 70 L 370 70"
+                stroke="var(--gray-500)" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+
+          <!-- Fourier approximation (animated) -->
+          <path class="wave-amber" d="M 50 110 Q 85 60 120 110 Q 155 160 190 110 Q 225 60 260 110 Q 295 160 330 110 Q 350 90 370 110">
+            <animate attributeName="d"
+              values="M 50 110 Q 85 60 120 110 Q 155 160 190 110 Q 225 60 260 110 Q 295 160 330 110 Q 350 90 370 110;
+                      M 50 75 Q 70 65 85 70 L 120 75 Q 135 145 155 150 L 190 145 Q 205 75 225 70 L 260 75 Q 275 145 295 150 L 330 145 Q 350 75 370 70;
+                      M 50 72 L 85 70 Q 100 68 115 70 L 120 150 Q 122 152 125 150 L 185 150 Q 188 148 190 70 L 195 70 Q 210 68 225 70 L 255 70 Q 258 72 260 150 L 265 150 Q 295 152 325 150 L 330 70 Q 350 68 370 72;
+                      M 50 110 Q 85 60 120 110 Q 155 160 190 110 Q 225 60 260 110 Q 295 160 330 110 Q 350 90 370 110"
+              dur="6s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- Component waves (faded) -->
+          <path stroke="var(--blue-400)" stroke-width="1" fill="none" opacity="0.4"
+                d="M 50 110 Q 85 80 120 110 Q 155 140 190 110 Q 225 80 260 110 Q 295 140 330 110"/>
+          <path stroke="var(--green-400)" stroke-width="1" fill="none" opacity="0.3"
+                d="M 50 110 Q 62 95 75 110 Q 87 125 100 110 Q 112 95 125 110 Q 137 125 150 110 Q 162 95 175 110 Q 187 125 200 110"/>
+
+          <!-- Labels -->
+          <text class="label" x="55" y="55" fill="var(--gray-500)">Target: Square wave</text>
+          <text class="math-label" x="200" y="200" text-anchor="middle">
+            n = <tspan>
+              <animate attributeName="textContent" values="1;3;5;15;1" dur="6s" repeatCount="indefinite"/>
+              1
+            </tspan> harmonics
+          </text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-conversation">
+          <em>"How can smooth sine waves make a sharp square wave?"</em>
+          <br><br>
+          Stack enough of them! A square wave is just sin(x) + sin(3x)/3 + sin(5x)/5 + ...
+          Keep adding odd harmonics and watch the corners get sharper. This is how MP3s, JPEGs,
+          and MRIs actually work.
+        </p>
+        <div class="insight-box">
+          <strong>Fourier's gift to humanity</strong>
+          <p>ANY repeating pattern can be built from sine waves. This single idea powers most of modern signal processing.</p>
+        </div>
+        <div class="code-snippet">
+<span class="comment"># The formula is beautiful:</span>
+square_wave = sum(<span class="number">4</span>/(n*pi) * sin(n*x)
+                  <span class="keyword">for</span> n <span class="keyword">in</span> [<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>,...])
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            25s
+          </span>
+          <span class="meta-item">1080p</span>
+        </div>
+        <button class="btn-sm">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Animation
+        </button>
+      </div>
+    </div>
+
+    <!-- Vector Field -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Fields That Flow</h2>
+        <span class="card-badge badge-field">Vector Fields</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrowTeal" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0, 6 3, 0 6" fill="#2DD4BF"/>
+            </marker>
+          </defs>
+
+          <!-- Rotation field arrows -->
+          <g transform="translate(200, 110)">
+            <!-- Ring 1 -->
+            <line x1="-100" y1="0" x2="-100" y2="-20" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="100" y1="0" x2="100" y2="20" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="0" y1="-70" x2="20" y2="-70" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="0" y1="70" x2="-20" y2="70" class="vector-line" marker-end="url(#arrowTeal)"/>
+
+            <!-- Diagonals -->
+            <line x1="-70" y1="-50" x2="-55" y2="-60" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="70" y1="-50" x2="60" y2="-35" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="-70" y1="50" x2="-60" y2="35" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="70" y1="50" x2="55" y2="60" class="vector-line" marker-end="url(#arrowTeal)"/>
+
+            <!-- Inner ring -->
+            <line x1="-40" y1="0" x2="-40" y2="-12" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="40" y1="0" x2="40" y2="12" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="0" y1="-35" x2="12" y2="-35" class="vector-line" marker-end="url(#arrowTeal)"/>
+            <line x1="0" y1="35" x2="-12" y2="35" class="vector-line" marker-end="url(#arrowTeal)"/>
+
+            <!-- Center point -->
+            <circle cx="0" cy="0" r="5" class="vector-dot"/>
+
+            <!-- Flowing particle -->
+            <circle r="6" fill="#FBBF24">
+              <animateMotion dur="4s" repeatCount="indefinite">
+                <mpath href="#flowPath"/>
+              </animateMotion>
+            </circle>
+            <path id="flowPath" d="M 60 0 A 60 60 0 1 1 60 -0.1" fill="none"/>
+
+            <!-- Flow guide (faint) -->
+            <ellipse cx="0" cy="0" rx="60" ry="60" stroke="var(--gray-600)" stroke-width="1" fill="none" stroke-dasharray="4,4" opacity="0.4"/>
+          </g>
+
+          <!-- Labels -->
+          <text class="math-label" x="200" y="205" text-anchor="middle">F(x,y) = (-y, x) — Rotation field</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-conversation">
+          <em>"What exactly IS a vector field?"</em>
+          <br><br>
+          Imagine little arrows at every point in space, showing which way things flow.
+          Drop a leaf in a stream and watch where it goes—that's the field in action.
+          This one creates rotation: at every point, the arrow points perpendicular to the radius.
+        </p>
+        <div class="insight-box">
+          <strong>Where you'll see this</strong>
+          <p>Weather maps, magnetic fields, fluid dynamics, game physics. Vector fields are everywhere once you know what to look for.</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            15s
+          </span>
+          <span class="meta-item">1080p</span>
+        </div>
+        <button class="btn-sm">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Animation
+        </button>
+      </div>
+    </div>
+
+    <!-- Pendulum -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">The Pendulum's Secret</h2>
+        <span class="card-badge badge-wave">Harmonic Motion</span>
+      </div>
+      <div class="animation-canvas">
+        <svg class="canvas-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <!-- Pendulum on left -->
+          <g transform="translate(100, 30)">
+            <!-- Pivot -->
+            <circle cx="0" cy="0" r="4" fill="var(--gray-500)"/>
+
+            <!-- Rod -->
+            <line x1="0" y1="0" x2="40" y2="80" stroke="var(--gray-400)" stroke-width="2">
+              <animateTransform attributeName="transform" type="rotate"
+                values="-30 0 0;30 0 0;-30 0 0" dur="2s" repeatCount="indefinite" calcMode="spline"
+                keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"/>
+            </line>
+
+            <!-- Bob -->
+            <circle r="12" fill="#60A5FA">
+              <animateMotion dur="2s" repeatCount="indefinite" calcMode="spline"
+                keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"
+                path="M 40 80 A 90 90 0 0 1 -40 80 A 90 90 0 0 1 40 80"/>
+            </circle>
+
+            <!-- Vertical reference -->
+            <line x1="0" y1="0" x2="0" y2="90" stroke="var(--gray-600)" stroke-width="1" stroke-dasharray="3,3"/>
+          </g>
+
+          <!-- Graph on right -->
+          <g transform="translate(180, 0)">
+            <line class="axis" x1="20" y1="110" x2="200" y2="110"/>
+            <text class="label" x="195" y="125">time</text>
+            <text class="label" x="25" y="50">angle</text>
+
+            <!-- Sine wave trace -->
+            <path class="wave-blue" d="M 20 110 Q 50 60 80 110 Q 110 160 140 110 Q 170 60 200 110"/>
+
+            <!-- Moving dot on graph -->
+            <circle r="5" fill="#60A5FA">
+              <animate attributeName="cx" values="20;80;140;200;140;80;20" dur="4s" repeatCount="indefinite"/>
+              <animate attributeName="cy" values="110;60;110;160;110;60;110" dur="4s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- Labels -->
+          <text class="math-label" x="200" y="205" text-anchor="middle">Pendulum motion IS a sine wave</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <p class="card-conversation">
+          <em>"A swinging pendulum draws a sine wave? Really?"</em>
+          <br><br>
+          Plot the angle over time and there it is—a perfect sine curve. The pendulum doesn't
+          know trigonometry; it's just following Newton's laws. But those laws produce
+          the same math as circular motion. Nature rhymes.
+        </p>
+        <div class="insight-box">
+          <strong>Simple harmonic motion</strong>
+          <p>Pendulums, springs, vibrating molecules, guitar strings—they all follow the same pattern because they all obey the same differential equation.</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            16s
+          </span>
+          <span class="meta-item">1080p</span>
+        </div>
+        <button class="btn-sm">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Animation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2 class="cta-title">Ready to create your own?</h2>
+    <p class="cta-text">
+      Stop struggling with formulas. Start seeing the ideas.
+      Manimo turns your descriptions into animations in seconds.
+    </p>
+    <a href="#" class="cta-button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+      Try Manimo Free
+    </a>
+  </section>
+</body>
+</html>

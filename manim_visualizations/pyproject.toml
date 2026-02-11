@@ -8,6 +8,7 @@ dependencies = [
     "manim>=0.19.1",
     "marimo>=0.18.4",
     "numpy>=2.4.0",
+    "playwright>=1.57.0",
 ]
 
 [project.scripts]

@@ -10,10 +10,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.9.0",
     "axios": "^1.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.546.0",
-    "@clerk/nextjs": "^6.9.0",
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-diff-viewer-continued": "^3.4.0",

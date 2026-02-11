@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
-import { Send } from 'lucide-react'
-import { Button } from '@/components/ui'
+import { ArrowUp } from 'lucide-react'
 
 interface ChatInputProps {
   onSend: (message: string) => void
@@ -14,7 +13,6 @@ export function ChatInput({ onSend, isLoading, placeholder = 'Describe your anim
   const [message, setMessage] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Auto-resize textarea
   useEffect(() => {
     const textarea = textareaRef.current
     if (textarea) {
@@ -38,9 +36,11 @@ export function ChatInput({ onSend, isLoading, placeholder = 'Describe your anim
     }
   }
 
+  const canSubmit = message.trim() && !isLoading
+
   return (
-    <div className="border-t border-gray-200 bg-white p-4">
-      <div className="flex items-end gap-3">
+    <div className="border-t border-slate-200 bg-white p-4">
+      <div className="relative">
         <textarea
           ref={textareaRef}
           value={message}
@@ -49,21 +49,22 @@ export function ChatInput({ onSend, isLoading, placeholder = 'Describe your anim
           placeholder={placeholder}
           disabled={isLoading}
           rows={1}
-          className="flex-1 resize-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm
-                     placeholder:text-gray-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500
-                     disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full resize-none rounded-lg border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 disabled:cursor-not-allowed disabled:opacity-50"
         />
-        <Button
+        <button
           onClick={handleSubmit}
-          disabled={!message.trim() || isLoading}
-          isLoading={isLoading}
-          className="shrink-0"
+          disabled={!canSubmit}
+          className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-md bg-slate-900 text-white transition-all hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <Send className="h-4 w-4" />
-        </Button>
+          {isLoading ? (
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          ) : (
+            <ArrowUp className="h-4 w-4" />
+          )}
+        </button>
       </div>
-      <p className="mt-2 text-xs text-gray-400">
-        Press Enter to send, Shift+Enter for new line
+      <p className="mt-2 text-xs text-slate-400">
+        Enter to send, Shift+Enter for new line
       </p>
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from '@/lib/utils'
 import { DiffPreview } from './DiffPreview'
-import { User, Bot } from 'lucide-react'
+import { User, Sparkles } from 'lucide-react'
 import type { ChatMessage as ChatMessageType } from '@/stores'
 
 interface ChatMessageProps {
@@ -26,25 +26,29 @@ export function ChatMessage({
     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       {/* Avatar */}
       <div
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
           isUser
-            ? 'bg-teal-600 text-white'
-            : 'bg-gray-200 text-gray-600'
+            ? 'bg-slate-900 text-white'
+            : 'bg-amber-100 text-amber-600'
         }`}
       >
-        {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+        {isUser ? (
+          <User className="h-3.5 w-3.5" />
+        ) : (
+          <Sparkles className="h-3.5 w-3.5" />
+        )}
       </div>
 
       {/* Content */}
-      <div className={`flex max-w-[80%] flex-col gap-2 ${isUser ? 'items-end' : 'items-start'}`}>
+      <div className={`flex max-w-[85%] flex-col gap-2 ${isUser ? 'items-end' : 'items-start'}`}>
         <div
-          className={`rounded-lg px-4 py-2 ${
+          className={`rounded-lg px-3 py-2 ${
             isUser
-              ? 'bg-teal-600 text-white'
-              : 'bg-gray-100 text-gray-900'
+              ? 'bg-slate-900 text-white'
+              : 'bg-slate-100 text-slate-900'
           }`}
         >
-          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
         </div>
 
         {/* Diff Preview for assistant messages */}
@@ -62,7 +66,7 @@ export function ChatMessage({
         )}
 
         {/* Timestamp */}
-        <span className="text-xs text-gray-400">
+        <span className="text-[11px] text-slate-400">
           {formatDistanceToNow(message.timestamp)}
         </span>
       </div>

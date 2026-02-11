@@ -74,5 +74,39 @@ Video rendering requires balancing quality, file size, and rendering time. This 
 
 </quality_levels>
 
+<rendering_commands>
+
+<command name="Preview Quality (fast iteration)">
+  <code>manim -pql animation.py SceneName</code>
+  <description>480p, fastest rendering. Use during development and testing.</description>
+</command>
+
+<command name="Medium Quality">
+  <code>manim -pqm animation.py SceneName</code>
+  <description>720p, balanced quality and speed. Good for review.</description>
+</command>
+
+<command name="High Quality">
+  <code>manim -pqh animation.py SceneName</code>
+  <description>1080p, production-ready. Use for final renders and YouTube.</description>
+</command>
+
+<command name="4K Quality">
+  <code>manim -pqk animation.py SceneName</code>
+  <description>4K resolution, slowest rendering. Use for highest quality output.</description>
+</command>
+
+<command name="GIF Output">
+  <code>manim -pql --format=gif animation.py SceneName</code>
+  <description>Export as animated GIF. Useful for previews, documentation, and sharing.</description>
+</command>
+
+<command name="No Preview">
+  <code>manim -ql animation.py SceneName</code>
+  <description>Render without opening preview. Use for batch rendering or CI.</description>
+</command>
+
+</rendering_commands>
+
 </skill_content>
 

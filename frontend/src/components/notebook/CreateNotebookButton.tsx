@@ -21,8 +21,8 @@ export function CreateNotebookButton({ onCreate }: CreateNotebookButtonProps) {
   }
 
   return (
-    <Button onClick={handleCreate} isLoading={isCreating}>
-      <Plus className="mr-2 h-4 w-4" />
+    <Button onClick={handleCreate} isLoading={isCreating} size="sm">
+      <Plus className="h-4 w-4" />
       New Notebook
     </Button>
   )
