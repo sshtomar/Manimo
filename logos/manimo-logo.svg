@@ -1,0 +1,33 @@
+<svg width="420" height="100" viewBox="0 0 420 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Manimo Logo - Primary Wordmark -->
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: Stacked animation frames -->
+  <g transform="translate(16, 14)">
+    <rect x="0" y="16" width="48" height="48" rx="8" fill="#6366f1" opacity="0.15" transform="rotate(-6 24 40)"/>
+    <rect x="6" y="10" width="48" height="48" rx="8" fill="#6366f1" opacity="0.35" transform="rotate(-3 30 34)"/>
+    <rect x="12" y="4" width="48" height="48" rx="8" fill="url(#iconGrad)"/>
+    <path d="M30 18 L30 40 L48 29 Z" fill="white" opacity="0.95"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(96, 26)" fill="#0f172a">
+    <path d="M0 48 L0 18 L6 18 L6 22 C8 19 12 17 17 17 C22 17 26 19 28 23 C30 19 35 17 41 17 C49 17 54 22 54 31 L54 48 L48 48 L48 32 C48 26 45 23 40 23 C35 23 31 27 31 33 L31 48 L25 48 L25 32 C25 26 22 23 17 23 C12 23 8 27 8 33 L8 48 L0 48 Z"/>
+    <path d="M68 48 C63 48 60 45 60 40 C60 34 65 31 74 31 L82 31 L82 29 C82 24 79 22 74 22 C70 22 67 24 66 27 L60 25 C62 20 68 16 75 16 C85 16 90 21 90 30 L90 48 L84 48 L84 44 C82 47 78 49 73 49 C70 49 68 48 68 48 Z M74 43 C79 43 82 40 82 36 L82 35 L75 35 C70 35 67 37 67 40 C67 42 69 43 74 43 Z"/>
+    <path d="M100 48 L100 18 L106 18 L106 22 C108 19 113 17 118 17 C127 17 132 22 132 31 L132 48 L126 48 L126 32 C126 26 122 23 117 23 C111 23 107 27 107 33 L107 48 L100 48 Z"/>
+    <path d="M144 48 L144 18 L152 18 L152 48 L144 48 Z M144 12 L152 12 L152 4 L144 4 L144 12 Z"/>
+    <path d="M164 48 L164 18 L170 18 L170 22 C172 19 176 17 181 17 C186 17 190 19 192 23 C194 19 199 17 205 17 C213 17 218 22 218 31 L218 48 L212 48 L212 32 C212 26 209 23 204 23 C199 23 195 27 195 33 L195 48 L189 48 L189 32 C189 26 186 23 181 23 C176 23 172 27 172 33 L172 48 L164 48 Z"/>
+    <path d="M232 49 C222 49 215 41 215 33 C215 24 222 17 232 17 C242 17 249 24 249 33 C249 41 242 49 232 49 Z M232 43 C238 43 242 39 242 33 C242 27 238 23 232 23 C226 23 222 27 222 33 C222 39 226 43 232 43 Z"/>
+  </g>
+
+  <circle cx="355" cy="72" r="4" fill="url(#brandGrad)"/>
+</svg>

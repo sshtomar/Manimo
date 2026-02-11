@@ -1,7 +1,6 @@
 """AI assistance endpoint."""
 
 from fastapi import APIRouter, HTTPException
-import modal.exception
 
 from ..models.requests import AskAIRequest, AskAIResponse
 from ..generation.orchestrator import orchestrate_generation
@@ -16,7 +15,7 @@ async def ask_ai(request: AskAIRequest) -> AskAIResponse:
 
     Two modes available:
     1. Standard mode (default): Skills-based two-pass generation
-    2. Agent mode: Claude Agent SDK in Modal sandbox for autonomous generation
+    2. Agent mode: Claude Agent SDK in E2B sandbox for autonomous generation
 
     Returns a proposed patch (cell or diff) and optionally applies it.
     """
@@ -38,12 +37,7 @@ async def ask_ai(request: AskAIRequest) -> AskAIResponse:
                 apply=request.apply,
             )
         return result
-    except modal.exception.NotFoundError as e:
-        raise HTTPException(
-            status_code=503,
-            detail=f"Modal sandbox not deployed. Deploy with: modal deploy modal/src/manimo_modal/app.py. Error: {e}"
-        )
-    except modal.exception.TimeoutError as e:
+    except TimeoutError as e:
         raise HTTPException(
             status_code=504,
             detail=f"Agent execution timed out: {e}"

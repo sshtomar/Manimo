@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui'
 import { CodeBlock } from './CodeBlock'
-import { Check, X, ExternalLink } from 'lucide-react'
+import { Check, X, ExternalLink, FileCode } from 'lucide-react'
 
 interface DiffPreviewProps {
   patchType: 'cell' | 'diff' | 'markdown'
@@ -25,37 +25,57 @@ export function DiffPreview({
   onOpenMarimo,
   isApplying,
 }: DiffPreviewProps) {
+  const typeLabel = {
+    cell: 'New Cell',
+    diff: 'Code Changes',
+    markdown: 'Markdown',
+  }
+
   return (
-    <div className="rounded-lg border border-gray-200 bg-gray-50">
+    <div className="w-full overflow-hidden rounded-lg border border-slate-200 bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-2">
-        <span className="text-xs font-medium text-gray-500 uppercase">
-          {patchType === 'cell' ? 'New Cell' : patchType === 'diff' ? 'Code Changes' : 'Markdown'}
-        </span>
+      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-3 py-2">
+        <div className="flex items-center gap-2">
+          <FileCode className="h-3.5 w-3.5 text-slate-400" />
+          <span className="text-xs font-medium text-slate-500">
+            {typeLabel[patchType]}
+          </span>
+        </div>
         {applied && (
-          <span className="flex items-center gap-1 text-xs text-green-600">
+          <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700">
             <Check className="h-3 w-3" />
             Applied
           </span>
         )}
       </div>
 
+      {/* Rationale */}
+      {rationale && (
+        <div className="border-b border-slate-200 px-3 py-2">
+          <p className="text-xs text-slate-600">{rationale}</p>
+        </div>
+      )}
+
       {/* Code */}
-      <div className="p-4">
-        <CodeBlock code={artifact} language={patchType === 'markdown' ? 'markdown' : 'python'} />
+      <div className="p-3">
+        <CodeBlock
+          code={artifact}
+          language={patchType === 'markdown' ? 'markdown' : 'python'}
+        />
       </div>
 
       {/* Actions */}
       {!applied && (
-        <div className="flex items-center gap-2 border-t border-gray-200 px-4 py-3">
+        <div className="flex items-center gap-2 border-t border-slate-200 bg-slate-50 px-3 py-2.5">
           <Button
             size="sm"
+            variant="accent"
             onClick={onApply}
             isLoading={isApplying}
             disabled={isApplying}
           >
-            <Check className="mr-1 h-4 w-4" />
-            Apply to Notebook
+            <Check className="h-3.5 w-3.5" />
+            Apply
           </Button>
           <Button
             size="sm"
@@ -63,7 +83,7 @@ export function DiffPreview({
             onClick={onReject}
             disabled={isApplying}
           >
-            <X className="mr-1 h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
             Reject
           </Button>
           {onOpenMarimo && (
@@ -74,7 +94,7 @@ export function DiffPreview({
               disabled={isApplying}
               className="ml-auto"
             >
-              <ExternalLink className="mr-1 h-4 w-4" />
+              <ExternalLink className="h-3.5 w-3.5" />
               Open in Marimo
             </Button>
           )}

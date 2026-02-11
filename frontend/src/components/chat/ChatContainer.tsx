@@ -3,9 +3,8 @@
 import { useEffect, useRef } from 'react'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
-import { Spinner } from '@/components/ui'
 import { useChatStore } from '@/stores'
-import { MessageSquare } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 
 interface ChatContainerProps {
   notebookId: string
@@ -18,7 +17,6 @@ export function ChatContainer({ notebookId, userId, onOpenMarimo }: ChatContaine
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const applyingRef = useRef<string | null>(null)
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
@@ -36,35 +34,39 @@ export function ChatContainer({ notebookId, userId, onOpenMarimo }: ChatContaine
     }
   }
 
+  const suggestions = [
+    'Create a rotating 3D cube',
+    'Animate the Pythagorean theorem',
+    'Show a sine wave transforming into a cosine wave',
+  ]
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-white">
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-teal-100">
-              <MessageSquare className="h-8 w-8 text-teal-600" />
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100">
+              <Sparkles className="h-6 w-6 text-amber-600" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 className="text-base font-semibold text-slate-900">
               Describe your animation
             </h3>
-            <p className="mt-2 max-w-sm text-sm text-gray-500">
+            <p className="mt-2 max-w-sm text-sm text-slate-500">
               Tell me what mathematical animation you'd like to create, and I'll generate the Manim code for you.
             </p>
-            <div className="mt-6 space-y-2 text-left">
-              <p className="text-xs font-medium text-gray-500 uppercase">
-                Try asking:
+
+            {/* Suggestions */}
+            <div className="mt-8 w-full max-w-sm space-y-2">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Try asking
               </p>
-              <div className="space-y-1">
-                {[
-                  'Create a rotating 3D cube',
-                  'Animate the Pythagorean theorem',
-                  'Show a sine wave transforming into a cosine wave',
-                ].map((suggestion) => (
+              <div className="space-y-2">
+                {suggestions.map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => handleSend(suggestion)}
-                    className="block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                    className="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-left text-sm text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50"
                   >
                     {suggestion}
                   </button>
@@ -75,7 +77,6 @@ export function ChatContainer({ notebookId, userId, onOpenMarimo }: ChatContaine
         ) : (
           <div className="space-y-4">
             {messages.map((message) => {
-              // Find the original user prompt for this message thread
               const userPrompt = messages
                 .slice(0, messages.indexOf(message))
                 .reverse()
@@ -96,10 +97,10 @@ export function ChatContainer({ notebookId, userId, onOpenMarimo }: ChatContaine
             {/* Loading indicator */}
             {isGenerating && (
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
-                  <Spinner size="sm" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-100">
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-amber-600 border-t-transparent" />
                 </div>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-slate-500">
                   Generating code...
                 </span>
               </div>

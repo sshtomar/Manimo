@@ -42,9 +42,10 @@ class Settings(BaseSettings):
     R2_SECRET_ACCESS_KEY: str = ""
     R2_BUCKET: str = "manimo-notebooks"
 
-    # Modal
-    MODAL_TOKEN_ID: str = ""
-    MODAL_TOKEN_SECRET: str = ""
+    # E2B sandbox
+    E2B_API_KEY: str = ""
+    E2B_TEMPLATE: str = "manimo-notebook"
+    E2B_TIMEOUT: int = 30 * 60  # 30 minutes
 
     # Auth (optional for MVP)
     JWT_SECRET_KEY: str = "dev-secret-key-change-in-production"

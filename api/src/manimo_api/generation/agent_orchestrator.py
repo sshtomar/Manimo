@@ -1,17 +1,18 @@
 """Autonomous orchestrator using Claude Agent SDK.
 
 Unlike the standard orchestrator that makes LLM calls and returns text,
-this orchestrator uses the Agent SDK running in a Modal sandbox to:
+this orchestrator uses the Agent SDK running in an E2B sandbox to:
 1. Read and understand the notebook
 2. Generate appropriate Manim code
 3. Optionally verify by running manim
 4. Iterate on errors if needed
 
-The agent runs in an isolated Modal container for security.
+The agent runs in an isolated E2B container for security.
 """
 
-import modal
 import logfire
+
+from manimo_e2b.agent import run_agent_in_sandbox
 
 from ..models.requests import AskAIResponse
 from ..storage.r2 import save_notebook_content
@@ -25,9 +26,9 @@ async def orchestrate_with_agent(
     apply: bool = False,
     use_subagents: bool = False,
 ) -> AskAIResponse:
-    """Orchestrate code generation using Claude Agent SDK in Modal sandbox.
+    """Orchestrate code generation using Claude Agent SDK in E2B sandbox.
 
-    The agent runs in an isolated Modal container where it can safely
+    The agent runs in an isolated E2B container where it can safely
     use tools like Read, Glob, Grep, and Bash without affecting the
     API server.
 
@@ -49,16 +50,12 @@ async def orchestrate_with_agent(
         use_subagents=use_subagents,
     ):
         logfire.info(
-            "Starting agent generation in Modal sandbox",
+            "Starting agent generation in E2B sandbox",
             mode="subagents" if use_subagents else "single",
         )
 
-        # Call the Modal sandbox function remotely
-        run_agent = modal.Function.from_name(
-            "manimo-notebooks", "run_agent_in_sandbox"
-        )
-
-        result = run_agent.remote(
+        # Run agent in E2B sandbox
+        result = run_agent_in_sandbox(
             notebook_id=notebook_id,
             user_id=user_id,
             user_prompt=user_prompt,
@@ -74,7 +71,7 @@ async def orchestrate_with_agent(
             )
 
         mode_desc = "dual-agent (planner+coder)" if use_subagents else "single agent"
-        rationale = f"Agent SDK generation ({mode_desc}) [Modal sandbox]"
+        rationale = f"Agent SDK generation ({mode_desc}) [E2B sandbox]"
 
         if result.get("session_id"):
             rationale += f" [session: {result['session_id'][:8]}...]"

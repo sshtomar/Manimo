@@ -1,0 +1,48 @@
+<svg width="420" height="100" viewBox="0 0 420 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Refined Wordmark v3: Dark mode variant -->
+  <defs>
+    <linearGradient id="brandGradV3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a78bfa"/>
+      <stop offset="100%" style="stop-color:#818cf8"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f14"/>
+      <stop offset="100%" style="stop-color:#18181b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="420" height="100" rx="12" fill="url(#bgGrad)"/>
+
+  <!-- Icon with glow effect -->
+  <g transform="translate(20, 14)">
+    <!-- Glow -->
+    <rect x="8" y="4" width="56" height="56" rx="12" fill="#a78bfa" opacity="0.15" filter="blur(8px)"/>
+    <!-- Motion trails -->
+    <rect x="0" y="10" width="52" height="52" rx="10" fill="#a78bfa" opacity="0.1"/>
+    <rect x="4" y="7" width="52" height="52" rx="10" fill="#a78bfa" opacity="0.2"/>
+    <!-- Main frame -->
+    <rect x="8" y="4" width="52" height="52" rx="10" fill="url(#brandGradV3)"/>
+    <!-- Play icon -->
+    <path d="M30 18 L30 42 L48 30 Z" fill="#0f0f14"/>
+  </g>
+
+  <!-- White wordmark -->
+  <g transform="translate(100, 26)" fill="#fafafa">
+    <!-- m -->
+    <path d="M0 48 L0 16 L8 16 L8 21 C10 17 15 15 21 15 C27 15 31 17 34 21 C37 17 42 15 49 15 C59 15 65 21 65 32 L65 48 L57 48 L57 33 C57 27 54 23 48 23 C42 23 38 27 38 34 L38 48 L30 48 L30 33 C30 27 27 23 21 23 C15 23 11 27 11 34 L11 48 L0 48 Z"/>
+    <!-- a -->
+    <path d="M82 48 C76 48 72 44 72 38 C72 31 78 27 89 27 L98 27 L98 25 C98 21 95 19 89 19 C84 19 81 21 80 24 L72 22 C74 16 81 12 90 12 C102 12 108 18 108 28 L108 48 L100 48 L100 44 C97 47 93 49 87 49 C84 49 82 48 82 48 Z M89 42 C94 42 98 39 98 34 L98 33 L90 33 C84 33 81 35 81 38 C81 41 84 42 89 42 Z"/>
+    <!-- n -->
+    <path d="M120 48 L120 16 L128 16 L128 21 C131 17 136 15 142 15 C153 15 159 21 159 32 L159 48 L151 48 L151 33 C151 27 147 23 141 23 C134 23 129 27 129 34 L129 48 L120 48 Z"/>
+    <!-- i -->
+    <path d="M172 48 L172 16 L183 16 L183 48 L172 48 Z M172 10 L183 10 L183 0 L172 0 L172 10 Z"/>
+    <!-- m -->
+    <path d="M196 48 L196 16 L204 16 L204 21 C206 17 211 15 217 15 C223 15 227 17 230 21 C233 17 238 15 245 15 C255 15 261 21 261 32 L261 48 L253 48 L253 33 C253 27 250 23 244 23 C238 23 234 27 234 34 L234 48 L226 48 L226 33 C226 27 223 23 217 23 C211 23 207 27 207 34 L207 48 L196 48 Z"/>
+    <!-- o -->
+    <path d="M280 49 C268 49 260 40 260 32 C260 23 268 15 280 15 C292 15 300 23 300 32 C300 40 292 49 280 49 Z M280 41 C287 41 291 37 291 32 C291 26 287 23 280 23 C273 23 269 26 269 32 C269 37 273 41 280 41 Z"/>
+  </g>
+
+  <!-- Accent line -->
+  <rect x="100" y="80" width="60" height="2" rx="1" fill="url(#brandGradV3)" opacity="0.6"/>
+</svg>

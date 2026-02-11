@@ -64,6 +64,9 @@ Thumbs.db
 *.mov
 rendered_videos/
 
+# Manim media cache (rendered videos, tex cache, text SVGs)
+manim_visualizations/media/
+
 # Temporary files
 *.tmp
 *.temp

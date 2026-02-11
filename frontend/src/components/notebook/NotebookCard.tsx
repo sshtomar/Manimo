@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { formatDistanceToNow } from '@/lib/utils'
-import { Play, MoreVertical, Trash2, Edit2 } from 'lucide-react'
+import { Play, MoreHorizontal, Trash2, Pencil } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 interface NotebookCardProps {
@@ -28,59 +28,66 @@ export function NotebookCard({ id, title, updatedAt, onDelete, onRename }: Noteb
   }, [])
 
   return (
-    <div className="group relative rounded-lg border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-md">
+    <div className="group relative rounded-lg border border-slate-200 bg-white transition-all duration-150 hover:border-slate-300 hover:shadow-sm">
       <Link href={`/notebook/${id}`} className="block p-4">
-        {/* Thumbnail placeholder */}
-        <div className="mb-3 flex h-32 items-center justify-center rounded-md bg-gradient-to-br from-teal-50 to-teal-100">
-          <Play className="h-8 w-8 text-teal-600/50" />
+        {/* Thumbnail */}
+        <div className="mb-4 flex aspect-[4/3] items-center justify-center rounded-md bg-slate-100">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-200/80">
+            <Play className="h-5 w-5 text-slate-400" />
+          </div>
         </div>
 
         {/* Content */}
-        <h3 className="font-medium text-gray-900 truncate">
+        <h3 className="truncate text-sm font-medium text-slate-900">
           {title}
         </h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-xs text-slate-500">
           {formatDistanceToNow(updatedAt)}
         </p>
       </Link>
 
       {/* Actions menu */}
-      <div className="absolute right-2 top-2" ref={menuRef}>
+      <div className="absolute right-3 top-3" ref={menuRef}>
         <button
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             setMenuOpen(!menuOpen)
           }}
-          className="rounded p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-gray-100"
+          className="flex h-7 w-7 items-center justify-center rounded-md bg-white/80 text-slate-500 opacity-0 backdrop-blur transition-all hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100"
         >
-          <MoreVertical className="h-4 w-4 text-gray-500" />
+          <MoreHorizontal className="h-4 w-4" />
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 mt-1 w-36 rounded-md border border-gray-200 bg-white py-1 shadow-lg z-10">
+          <div className="absolute right-0 top-8 z-10 w-36 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
             <button
-              onClick={() => {
-                const newTitle = prompt('New title:', title)
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                const newTitle = prompt('Rename notebook:', title)
                 if (newTitle && newTitle !== title) {
                   onRename?.(id, newTitle)
                 }
                 setMenuOpen(false)
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
             >
-              <Edit2 className="h-4 w-4" />
+              <Pencil className="h-3.5 w-3.5" />
               Rename
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
                 if (confirm('Delete this notebook?')) {
                   onDelete?.(id)
                 }
                 setMenuOpen(false)
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-gray-100"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
               Delete
             </button>
           </div>
