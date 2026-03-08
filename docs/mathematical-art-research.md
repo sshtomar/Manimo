@@ -172,6 +172,7 @@ A comprehensive collection of the best replicable mathematical art projects, rep
 
 | Project | Language | Notes |
 |---------|----------|-------|
+| [chris-greening/spyrograph](https://github.com/chris-greening/spyrograph) | Python | Best-in-class spirograph library with epitrochoids, hypotrochoids, animated tracing, and mathematical analysis tools. |
 | [seedcode/SpirographN](https://github.com/seedcode/SpirographN) | JavaScript | N-rotor spirograph (beyond classic 2-circle). |
 | [ddeveloper72/spirographs-py](https://github.com/ddeveloper72/spirographs-py) | Python | Parametric spirograph with turtle graphics. |
 
@@ -181,7 +182,9 @@ A comprehensive collection of the best replicable mathematical art projects, rep
 
 | Project | Language | Notes |
 |---------|----------|-------|
+| [amandaghassaei/OrigamiSimulator](https://github.com/amandaghassaei/OrigamiSimulator) | JavaScript/WebGL | Real-time GPU-powered origami simulation. Folds all creases simultaneously using fragment shaders. The most impressive origami software available. |
 | [bugfolder/TreeMaker](https://github.com/bugfolder/treemaker) | C++ | Robert J. Lang's TreeMaker 5.0 -- foundational tool that launched computational origami. Used by NASA for solar array folds. |
+| [origamimagiro/flat-folder](https://github.com/origamimagiro/flat-folder) | JavaScript | Computes valid flat-foldable states of crease patterns. By Jason S. Ku. |
 
 ---
 
@@ -216,11 +219,19 @@ A comprehensive collection of the best replicable mathematical art projects, rep
 
 ---
 
+## Chaos Theory Additional Tools
+
+| Project | Language | Notes |
+|---------|----------|-------|
+| [gboeing/pynamical](https://github.com/gboeing/pynamical) | Python | Model, simulate, and visualize discrete nonlinear dynamical systems. Uses pandas/numpy/numba. |
+
+---
+
 ## Notable Creative Coders
 
-- **Daniel Shiffman** ([The Coding Train](https://thecodingtrain.com/)) -- Fourier drawings, Nature of Code, hundreds of math-art challenges
-- **Inigo Quilez** ([iquilezles.org](https://iquilezles.org/)) -- Co-creator of Shadertoy, mathematical paintings in pure GLSL
-- **Matt DesLauriers** ([mattdesl](https://github.com/mattdesl)) -- Framework author for generative artwork in JavaScript/canvas/WebGL
+- **Daniel Shiffman** ([The Coding Train](https://thecodingtrain.com/)) -- Fourier drawings, [Nature of Code](https://natureofcode.com/) (free book), hundreds of math-art challenges
+- **Inigo Quilez** ([iquilezles.org](https://iquilezles.org/)) -- Co-creator of Shadertoy, mathematical paintings in pure GLSL. Notable shaders: [Snail](https://www.shadertoy.com/view/ld3Gz2) (considered one of the best shaders ever written), [Selfie Girl](https://www.shadertoy.com/view/WsSBzh) ("Pixar quality in a shader")
+- **Matt DesLauriers** ([mattdesl](https://github.com/mattdesl)) -- Creator of canvas-sketch framework, [math-as-code](https://github.com/mattdesl/math-as-code) (mathematical notation explained with code), generative artwork in JavaScript/canvas/WebGL
 
 ---
 
